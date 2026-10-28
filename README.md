@@ -1,111 +1,244 @@
 # TicTacToe Arena — Ultimate Edition
 
-A complete, offline-first neon Tic-Tac-Toe gaming site. Pure **HTML + CSS + JavaScript** frontend, optional **Python (FastAPI)** backend for local-network room duels. No accounts, no tracking, no cloud, no real money.
+A complete, offline-first Tic-Tac-Toe game built with **vanilla HTML/CSS/JavaScript** and a **Python FastAPI** backend for optional same-LAN multiplayer.
 
-## Features
+> 50+ arenas · 3×3 to 10×10 boards · 5 AI difficulties (incl. minimax unbeatable on 3×3) · custom X/O symbols · profile system · R Coin economy · redeem codes (incl. `RABBi` for unlimited coins) · LAN room multiplayer.
 
-- **3 modes** — Solo vs AI (Easy / Normal / Hard / Expert / Impossible), Pass & Play on one device, and 4-digit **Room Code** duels (tabs on one device, or two devices over Wi-Fi via the Python server).
-- **64 arenas** — every arena has its own palette, board skin, glow, glass cells and a live particle ambience (petals, embers, snow, matrix rain, rifts, streaks…). All original CSS/canvas art — zero copyrighted assets.
-- **Board sizes 3×3 → 10×10** with configurable win length (3/4/5/6 in a row) and full horizontal/vertical/diagonal detection.
-- **16 X/O symbol sets** — lightning vs orb, flame vs snowflake, skull vs ghost, pixel, gold, holographic, animated pulse… P1 and P2 equip independently.
-- **Profile system** — username, SVG avatar + frames, banners, 100+ levels with titles, XP, full stats, match history.
-- **R Coin economy** — earn by playing, daily login streaks, daily missions, weekly challenge, achievements, transaction ledger, purchase confirmations, no negative balances, no double-purchases.
-- **Redeem codes** — Wallet → Redeem Code. Documented starter codes: `WELCOME100`, `STARTER250`, `ARENA500`. The legendary code `RABBi` switches your local profile to **UNLIMITED R COINS** mode (case-insensitive; a local fun feature, not a financial balance).
-- **Fair AI** — Impossible is true full-tree minimax on 3×3 (provably cannot lose there); larger boards use alpha-beta search with heuristic evaluation (very strong, honestly not claimed unbeatable).
-- **Match tools** — undo, restart, rematch, per-session scores, pause, winning-line animation, confetti, WebAudio sound FX (procedurally generated — works offline), haptics, keyboard play (arrows + Enter, `U` undo, `Esc` pause), touch support, reduced-motion support, leave-match confirmation.
+---
 
-## Project structure
+## ✨ Features
+
+### Game modes
+- **Local Solo** — play vs AI (Easy / Medium / Hard / Expert / Impossible).
+- **Local Multiplayer** — pass-and-play on one device.
+- **Join with Code** — same-LAN multiplayer via the Python WebSocket server. Create a 4-digit room code, share it, both devices connect.
+
+### Board sizes & win rules
+| Size | Win length choices |
+|------|-------------------|
+| 3×3  | 3 in a row |
+| 4×4  | 3 or 4 in a row |
+| 5×5  | 4 or 5 in a row |
+| 6×6  | 4 or 5 in a row |
+| 7×7  | 4, 5 or 6 in a row |
+| 8×8  | 5, 6 or 7 in a row |
+| 9×9  | 5 or 6 in a row |
+| 10×10 | 5, 6 or 7 in a row |
+
+Horizontal, vertical, and both diagonals count.
+
+### AI difficulties
+- **Easy** — random legal moves.
+- **Medium** — basic win/block logic with center bias.
+- **Hard** — 1-ply lookahead + heuristic evaluation.
+- **Expert** — bounded minimax with alpha-beta pruning (deeper).
+- **Impossible** — full minimax on 3×3 (truly unbeatable); bounded-depth minimax on larger boards (very strong but not literally unbeatable — the UI never claims otherwise).
+
+### 50+ arenas
+Arenas are pure CSS themes (gradients, animations, particles) — no copyrighted assets. Categories: Nature, Fantasy, Space, Cities, Adventure, Games & Entertainment, Special. Each has its own background, board tint, X/O colors, and animated backdrop.
+
+### Custom X/O symbols
+15 symbol packs (Classic, Neon, Lightning & Orb, Fire & Ice, Star & Moon, Diamond & Heart, Skull & Ghost, Sword & Shield, Crown & Ring, Robot & Alien, Flower & Butterfly, Pixel, Golden, Holographic, Animated). Each pack can be equipped independently for X and O.
+
+### Profile system
+- Username, avatar letter, avatar color, banner gradient, avatar frame
+- XP & level (100+ levels with 12 title tiers from Beginner → Ultimate Legend)
+- Stats: matches, wins, losses, draws, win rate, streak, best streak
+- Equipped arena/symbols/frame, R Coin balance
+- Recent matches
+- Match history (last 50)
+- All stored locally in browser localStorage
+
+### R Coin economy
+- Wallet with coin icon
+- Earn coins by winning (more for harder AI), draws (smaller), LAN wins (biggest)
+- Daily login reward (grows with streak)
+- Daily missions (3 per day, claim for coins + XP)
+- Achievements with coin rewards
+- Transaction history
+- Purchase confirmation
+- Cannot go negative
+- Unlimited R Coin mode (via `RABBi` code) — purchases don't reduce balance; UI shows `∞`
+
+### Redeem codes (open the wallet → 🎁 Redeem Code)
+| Code | Effect |
+|------|--------|
+| `RABBi` | Activates **Unlimited R Coins** mode for this profile. (Case-insensitive, but must be spelled exactly R-A-B-B-i.) |
+| `WELCOME100` | +100 R Coins (once per profile) |
+| `ARENA500` | +500 R Coins (once per profile) |
+| `STARTER250` | +250 R Coins (once per profile) |
+
+Codes are validated locally — no internet call. Local redeem codes are NOT secure against someone editing their browser localStorage; that's acceptable for an offline single-player game.
+
+### Match features
+- Smooth turn animations
+- Winning line highlight
+- Draw detection
+- Restart / rematch
+- Match score tracking
+- Undo (solo & local only)
+- Sound effects with mute
+- Haptic feedback (where supported)
+- Adjustable animation level (off / low / full)
+- Pause / resume
+- Rules modal
+- Keyboard accessible (Tab + Enter on cells)
+- Mobile touch controls
+- Confirmation before leaving an active match
+
+### Performance & privacy
+- No external fonts, images, or analytics
+- No tracking, no accounts, no internet required after first load
+- All data in `localStorage` — your device, your data
+- Reduced-motion support (auto + manual override)
+- Static CSS/JS — fast first paint
+
+---
+
+## 📁 Project structure
 
 ```
 tictactoe-arena/
-├─ app.py            # optional Python local server (FastAPI + WebSockets)
+├─ app.py                  # FastAPI backend (static + WebSocket rooms)
 ├─ requirements.txt
 ├─ README.md
-├─ index.html        # THE WHOLE GAME (open this file directly to play offline)
-├─ static/           # optional: you may move index.html here; app.py finds both spots
-└─ data/             # created at runtime for optional local save-file backups
+├─ static/
+│  ├─ index.html           # All pages & modals
+│  ├─ styles.css           # Dark premium UI + 50+ arena themes
+│  ├─ data.js              # Arenas, symbol packs, frames, achievements, levels, codes
+│  ├─ store.js             # localStorage persistence (profile/coins/settings)
+│  ├─ game.js              # Game engine + AI (minimax + alpha-beta)
+│  ├─ net.js               # WebSocket client for LAN rooms
+│  └─ app.js               # Router + UI rendering + event handlers
+└─ data/                   # Optional profile backup files (auto-created)
 ```
 
-## Quick start — play offline (no Python needed)
+---
 
-1. Open `index.html` in any modern browser (double-click works — `file://` is supported).
-2. That's it. Everything works offline: arenas, symbols, AI, wallet, missions, and same-device room duels between browser tabs.
+## 🚀 Setup — Windows PowerShell
 
-> Tip for same-device rooms with separate profiles: open the game in a normal tab **and** a private/incognito window — the private window gets its own profile and storage. Both tabs join via the 4-digit code.
+### 1. Install Python 3.10+
+Download from <https://www.python.org/downloads/windows/> and tick "Add Python to PATH" during install.
 
-## Full setup — Windows PowerShell (two-device LAN play)
-
-Run these in PowerShell, inside the project folder:
-
+Verify:
 ```powershell
-# 1) Install Python
-#    Download Python 3.11+ from https://www.python.org/downloads/
-#    IMPORTANT: tick "Add python.exe to PATH" during installation.
-#    Verify:
 python --version
+```
 
-# 2) Create & activate a virtual environment
+### 2. Get the project
+Place the `tictactoe-arena/` folder anywhere, e.g. `C:\Users\you\tictactoe-arena`.
+
+### 3. Create & activate a virtual environment
+```powershell
+cd C:\Users\you\tictactoe-arena
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-#    If activation is blocked, run this once, then retry:
-#    Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
-
-# 3) Install requirements (needs internet, once)
-pip install -r requirements.txt
-
-# 4) Start the local server
-uvicorn app:app --host 0.0.0.0 --port 8000
-#    (or simply: python app.py)
-
-# 5) Open the game on THIS computer
-start http://localhost:8000
 ```
 
-When Windows Firewall asks, allow access on **Private networks** so other devices on your Wi-Fi can reach the server.
+> If PowerShell blocks the script, run once:
+> ```powershell
+> Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+> ```
 
-## Play with two devices on the same Wi-Fi
+### 4. Install requirements
+```powershell
+pip install -r requirements.txt
+```
 
-1. On the host PC, find your local IP:
+### 5. Start the server
+```powershell
+python app.py
+```
 
+You'll see:
+```
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+```
+
+### 6. Open the game
+Open your browser at <http://localhost:8000>. The game loads once and works offline afterward.
+
+### 7. Play offline
+- Solo vs AI and Local Multiplayer modes work fully offline (just keep the static files open in the browser; the Python server is only required for LAN multiplayer).
+- To run purely offline without the Python server, you can also open `static/index.html` directly in your browser — every feature except "Join with Code" works.
+
+### 8. Connect two devices on the same LAN
+1. Find the host computer's local IP. In PowerShell:
    ```powershell
-   ipconfig | findstr /i "IPv4"
-   # e.g. 192.168.1.23
+   ipconfig | Select-String "IPv4"
    ```
-
-2. On the second device (phone/laptop) connected to the **same Wi-Fi**, open:
-
+   Look for something like `192.168.1.10` (your Wi-Fi adapter).
+2. Make sure Windows Firewall allows Python on port 8000 (the first time you run `python app.py`, Windows usually prompts — click **Allow**).
+3. On the other device (phone, tablet, another laptop on the **same Wi-Fi**), open:
    ```
-   http://192.168.1.23:8000
+   http://192.168.1.10:8000
    ```
+4. On the host device: **Play → Join with Code → Create**. Note the 4-digit code.
+5. On the second device: **Play → Join with Code → enter the code → Join**. Make sure the server URL field is set to `ws://192.168.1.10:8000` (replace with your host IP).
+6. The host clicks **Start** (or the server auto-starts when both players are in). Take turns.
 
-3. One player: **Play → Room Code Duel → Create Room** → share the 4-digit code.
-   Other player: **Join Room** → enter the 4 digits → play. The lobby shows who is X / who is O, waiting status, copy/share buttons, rematch flow, and disconnection handling.
+> ⚠️ This is **same-LAN multiplayer only**, not cross-internet. Both devices must be on the same Wi-Fi network and able to reach the host computer.
 
-**Honesty note:** this is *local-network* multiplayer only. There is deliberately **no internet matchmaking** — no external server, no accounts, nothing leaves your LAN.
+### 9. Back up your local data
+- **In-app:** Settings → Export Save (JSON). Pick a safe location.
+- **Manual:** The data lives in your browser's localStorage for `http://localhost:8000`. To back up, use the in-app Export feature, or use your browser's DevTools → Application → Local Storage → copy the `tictactoe_arena_save_v1` key.
+- **Optional server-side backup:** the Python server exposes `POST /api/backup/save` and `GET /api/backup/load/{player_id}` to write a profile JSON into `./data/`. This is purely a convenience and never required.
 
-## Playing offline after loading
+---
 
-Once opened, the game needs no network at all. There are no external fonts, images, CDNs, APIs or analytics; even sound effects are synthesized live with WebAudio. You can disconnect from the internet and keep playing — solo, pass-and-play, and room tabs on the same browser all keep working.
+## 🎮 Quick start
 
-## Backing up your game data
+1. Open the app.
+2. **Play → Local Solo → Medium → Start Match** — beat the AI.
+3. Win to earn R Coins (visible in the top-right pill).
+4. **Wallet → 🎁 Redeem Code → enter `RABBi`** → Unlimited R Coins mode activated.
+5. **Shop → Arenas** → unlock any arena you like → Equip.
+6. **Shop → Symbols** → unlock a symbol pack → Equip as X and/or O.
+7. Try **Local Multiplayer** with a friend on the same device.
+8. For LAN play, follow section 8 above.
 
-- **Easiest:** Settings → **Export save** → a `tictactoe-arena-save.json` file downloads. Restore anytime via **Import save** (even on another device).
-- **Manual:** progress lives in your browser's `localStorage` under the key `tta_save_v1`.
-- **Server backup (optional):** while running `app.py`, POST your exported JSON to `/save`; a copy is written to `data/save.json` and can be fetched back from `/save`.
-- To move to a new browser/device: export → copy file → import.
+---
 
-## Privacy & security notes
+## 🔧 Troubleshooting
 
-- No registration, no personal data collection, no analytics, no external requests.
-- All progress is stored **on your device** in localStorage.
+**"Connection timed out. Is the Python server running?"**
+- Make sure `python app.py` is running on the host.
+- Make sure both devices are on the same Wi-Fi.
+- Check Windows Firewall allows port 8000.
+- Verify the host IP in the server URL field matches `ipconfig` output.
 
-> **Transparency:** localStorage is readable and editable by anyone with access to your browser's developer tools. That means a technical user could grant themselves R Coins or redeem codes manually. This is acceptable by design — R Coins and the `RABBi` unlimited mode are a local, personal-entertainment feature, **not** real currency, and no purchase ever touches real money or a payment system. Please only edit your own data; don't tamper with other people's saves or devices.
+**The board looks wrong on huge sizes (9×9, 10×10)**
+- This is expected on small phone screens — cells shrink automatically. Try a tablet or desktop.
 
-## Troubleshooting
+**AI takes too long on 10×10 Impossible**
+- The depth limiter caps thinking time. For best experience use Hard/Expert on huge boards, or Impossible only on 3×3 (where it's truly unbeatable).
 
-- **Phone can't reach the server:** confirm both devices share the same Wi-Fi, the firewall allowed private-network access, and you're using the PC's IPv4 address with port `:8000`.
-- **`uvicorn` not recognized:** activate the venv (`.\.venv\Scripts\Activate.ps1`) or run `python -m uvicorn app:app --host 0.0.0.0 --port 8000`.
-- **Reset everything:** Settings → Reset all (double confirmation), or clear the site's storage in browser settings.
-- **Slow device:** Settings → Animations → Reduced/Off — particles and effects scale down or stop.
+**My save is gone!**
+- Browser localStorage is per-browser, per-origin. If you clear site data, switch browsers, or use private mode, your save won't carry over. Use **Settings → Export Save** regularly.
 
-Made for the arena. X takes the first move — make it count.
+**Redeem code says "Invalid code"**
+- Codes are case-insensitive but must match exactly. Try `rabbi`, `RABBI`, `RABBi` — all work. `welcome100`, `WELCOME100` — all work. Spaces are trimmed automatically.
+
+---
+
+## 🛡️ Security & privacy notes
+
+- No accounts, no login, no analytics, no tracking.
+- All data lives in your browser's localStorage on your own device.
+- The Python server only relays moves between two players on the same LAN — it never sees your profile, coins, or settings.
+- Local redeem codes are NOT cryptographically secure; anyone with access to your browser's DevTools can grant themselves unlimited coins. This is by design for an offline single-player game.
+- The server uses in-memory room state — no database, no persistent server-side data.
+
+---
+
+## 🧩 Tech stack
+
+- **Frontend:** HTML, CSS, vanilla JavaScript (no frameworks, no TypeScript)
+- **Backend:** Python 3.10+, FastAPI, uvicorn, WebSockets
+- **Persistence:** Browser localStorage (frontend), in-memory rooms (backend)
+
+---
+
+## 📜 License
+
+Personal offline entertainment. Use freely. All arena artwork is original CSS — no copyrighted game assets are used. "Minecraft-Inspired Block World" is an original voxel-style theme and is not affiliated with Mojang or Microsoft.

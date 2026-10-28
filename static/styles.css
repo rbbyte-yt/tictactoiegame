@@ -1,0 +1,1744 @@
+/* =========================================================
+   TicTacToe Arena — Ultimate Edition
+   Premium dark gaming UI · 50+ arena themes · responsive
+   ========================================================= */
+
+/* ---------- CSS Reset ---------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+button { font: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input, select, textarea { font: inherit; color: inherit; }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+/* ---------- Theme tokens ---------- */
+:root {
+  --bg-0: #05060f;
+  --bg-1: #0a0a1f;
+  --bg-2: #11122b;
+  --bg-3: #1a1c3a;
+  --panel: rgba(20, 22, 50, 0.55);
+  --panel-strong: rgba(20, 22, 50, 0.85);
+  --panel-border: rgba(140, 130, 255, 0.18);
+  --text: #e9ecff;
+  --text-dim: #9aa0c8;
+  --text-mute: #6b7099;
+  --accent: #7c3aed;       /* purple */
+  --accent-2: #22d3ee;     /* cyan */
+  --accent-3: #4ade80;     /* electric green */
+  --accent-4: #f472b6;     /* pink */
+  --warn: #fbbf24;
+  --danger: #ef4444;
+  --gold: #fcd34d;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-lg: 24px;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --glow: 0 0 24px rgba(124, 58, 237, 0.45);
+  --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --font: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, "Noto Sans", "Noto Sans SC", sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+  --board-line: rgba(255, 255, 255, 0.12);
+  --cell-bg: rgba(255, 255, 255, 0.04);
+  --cell-hover: rgba(255, 255, 255, 0.09);
+}
+
+/* ---------- Body ---------- */
+body {
+  font-family: var(--font);
+  background: var(--bg-1);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Animated arena backdrop */
+.arena-backdrop {
+  position: fixed; inset: 0; z-index: -1;
+  overflow: hidden;
+  background: var(--bg-1);
+  transition: background 600ms ease;
+}
+.backdrop-layer { position: absolute; inset: 0; }
+.backdrop-stars {
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 80% 20%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1.5px 1.5px at 50% 70%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 30% 80%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(2px 2px at 70% 60%, rgba(255,255,255,0.4), transparent);
+  background-size: 400px 400px;
+  animation: drift 60s linear infinite;
+  opacity: 0.5;
+}
+.backdrop-glow {
+  background: radial-gradient(ellipse at 20% 0%, rgba(124, 58, 237, 0.18), transparent 50%),
+              radial-gradient(ellipse at 80% 100%, rgba(34, 211, 238, 0.15), transparent 50%);
+}
+.backdrop-grid {
+  background-image:
+    linear-gradient(rgba(124, 58, 237, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 58, 237, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+}
+.backdrop-fx {
+  background:
+    radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(124, 58, 237, 0.12), transparent 30%);
+  transition: background 200ms ease;
+}
+@keyframes drift { from { background-position: 0 0; } to { background-position: 400px 400px; } }
+
+/* ---------- Glass panels ---------- */
+.glass {
+  background: var(--panel);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* ---------- Top nav ---------- */
+.top-nav {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; gap: 16px;
+  padding: 12px 20px;
+  border-radius: 0 0 var(--radius) var(--radius);
+  margin: 0 12px 0;
+  background: rgba(10, 10, 31, 0.78);
+  border-top: none;
+}
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; }
+.brand-mark {
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-radius: 10px; font-weight: 900; color: white;
+  box-shadow: 0 0 18px rgba(124, 58, 237, 0.5);
+}
+.brand-text .accent { color: var(--accent-2); }
+.nav-links { display: flex; gap: 4px; flex-wrap: wrap; margin-left: 8px; }
+.nav-links a {
+  padding: 8px 14px; border-radius: 10px;
+  color: var(--text-dim); font-size: 14px; font-weight: 600;
+  transition: var(--transition);
+}
+.nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+.nav-links a.active { color: var(--accent-2); background: rgba(34, 211, 238, 0.1); }
+.nav-wallet { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+.coin-pill {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: 999px;
+  background: linear-gradient(135deg, rgba(252, 211, 77, 0.15), rgba(252, 211, 77, 0.05));
+  border: 1px solid rgba(252, 211, 77, 0.3);
+  font-weight: 700; color: var(--gold);
+  transition: var(--transition);
+}
+.coin-pill:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(252, 211, 77, 0.3); }
+.coin-icon {
+  width: 22px; height: 22px;
+  display: grid; place-items: center;
+  background: radial-gradient(circle at 30% 30%, #fff4c4, #fcd34d 60%, #b8860b);
+  border-radius: 50%; color: #5a3a00;
+  font-weight: 900; font-size: 12px;
+  box-shadow: inset 0 -2px 4px rgba(0,0,0,0.3), 0 0 8px rgba(252, 211, 77, 0.5);
+}
+.avatar-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 12px 4px 4px; border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--panel-border);
+  transition: var(--transition);
+}
+.avatar-chip:hover { background: rgba(255,255,255,0.1); }
+.avatar-mini {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-4));
+  font-weight: 800; font-size: 14px; color: white;
+}
+.avatar-level {
+  font-size: 12px; font-weight: 700; color: var(--accent-2);
+}
+
+.nav-toggle { display: none; flex-direction: column; gap: 4px; padding: 8px; }
+.nav-toggle span { width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: var(--transition); }
+
+/* ---------- App layout ---------- */
+.app { padding: 24px 16px 80px; max-width: 1280px; margin: 0 auto; }
+.page { display: none; animation: fadeIn 300ms ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.page-title {
+  font-size: 28px; font-weight: 800; margin-bottom: 16px;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  padding: 10px 18px; border-radius: 10px;
+  font-weight: 700; font-size: 14px;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #9333ea);
+  color: white;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);
+}
+.btn-primary:hover { box-shadow: 0 6px 22px rgba(124, 58, 237, 0.6); transform: translateY(-1px); }
+.btn-ghost { background: rgba(255,255,255,0.06); border-color: var(--panel-border); color: var(--text); }
+.btn-ghost:hover { background: rgba(255,255,255,0.12); }
+.btn-danger { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); color: #fca5a5; }
+.btn-danger:hover { background: rgba(239, 68, 68, 0.25); }
+.btn-lg { padding: 14px 28px; font-size: 16px; border-radius: 12px; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ---------- Cards ---------- */
+.card { padding: 20px; border-radius: var(--radius); margin-bottom: 16px; }
+.card h3 { margin-bottom: 12px; font-size: 18px; }
+.card h4 { margin: 16px 0 8px; font-size: 15px; color: var(--text-dim); }
+.card.feature { cursor: pointer; transition: var(--transition); }
+.card.feature:hover { transform: translateY(-4px); border-color: var(--accent-2); box-shadow: 0 12px 32px rgba(34, 211, 238, 0.2); }
+.feature-icon { font-size: 32px; margin-bottom: 8px; }
+.grid-cards {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  margin: 24px 0;
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  display: grid; grid-template-columns: 1.2fr 1fr;
+  gap: 24px; align-items: center;
+  padding: 32px; margin-bottom: 24px;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(34, 211, 238, 0.08));
+  border-color: rgba(124, 58, 237, 0.3);
+}
+.hero h1 { font-size: 44px; font-weight: 900; line-height: 1.05; margin-bottom: 12px; }
+.hero h1 .accent { background: linear-gradient(135deg, var(--accent-2), var(--accent-4)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero-tag { color: var(--text-dim); font-size: 16px; margin-bottom: 20px; line-height: 1.5; }
+.hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+.hero-board { display: grid; place-items: center; }
+.mini-board {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 6px; width: 220px; height: 220px;
+}
+.mini-cell {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  display: grid; place-items: center;
+  font-size: 48px; font-weight: 900;
+  animation: pop 0.4s ease;
+}
+.mini-cell.x { color: var(--accent-2); text-shadow: 0 0 12px var(--accent-2); }
+.mini-cell.o { color: var(--accent-4); text-shadow: 0 0 12px var(--accent-4); }
+@keyframes pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* ---------- Missions ---------- */
+.missions-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.mission {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  display: grid; grid-template-columns: 1fr auto; gap: 8px;
+  align-items: center;
+}
+.mission-title { font-weight: 700; font-size: 14px; }
+.mission-progress { color: var(--text-dim); font-size: 12px; }
+.mission-reward { color: var(--gold); font-weight: 700; font-size: 13px; }
+.mission.complete { border-color: var(--accent-3); background: rgba(74, 222, 128, 0.08); }
+.mission-claim { background: var(--accent-3); color: #0a0a1f; padding: 6px 10px; border-radius: 8px; font-weight: 700; font-size: 12px; }
+
+/* ---------- Mode cards ---------- */
+.mode-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.mode-card { text-align: center; padding: 24px; cursor: pointer; transition: var(--transition); }
+.mode-card:hover { transform: translateY(-4px); border-color: var(--accent-2); }
+.mode-emoji { font-size: 48px; margin-bottom: 8px; }
+.mode-card h3 { font-size: 18px; margin-bottom: 4px; }
+.mode-card p { color: var(--text-dim); font-size: 13px; }
+
+/* ---------- Setup panel ---------- */
+.setup-grid {
+  display: grid; gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin-bottom: 16px;
+}
+.field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.field > span { color: var(--text-dim); font-weight: 600; }
+.field input, .field select {
+  padding: 10px 12px; border-radius: 10px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  outline: none; transition: var(--transition);
+}
+.field input:focus, .field select:focus { border-color: var(--accent-2); box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.15); }
+.field.inline { flex-direction: row; align-items: center; gap: 8px; }
+.room-input { display: flex; gap: 6px; }
+.room-input input { flex: 1; min-width: 0; }
+.setup-actions { display: flex; justify-content: center; }
+
+/* ---------- Game shell ---------- */
+.game-shell { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+.game-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+}
+.game-mode-tag {
+  font-weight: 700; color: var(--accent-2);
+  text-transform: uppercase; letter-spacing: 1px; font-size: 13px;
+}
+.players-bar {
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center;
+}
+.player-card {
+  padding: 14px; display: flex; align-items: center; gap: 12px;
+  transition: var(--transition);
+}
+.player-card.active { border-color: var(--accent-2); box-shadow: 0 0 20px rgba(34, 211, 238, 0.3); }
+.player-card:nth-child(3) { flex-direction: row-reverse; text-align: right; }
+.player-symbol {
+  width: 44px; height: 44px;
+  display: grid; place-items: center;
+  border-radius: 12px;
+  font-size: 24px; font-weight: 900;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--panel-border);
+}
+.player-symbol.x { color: var(--accent-2); }
+.player-symbol.o { color: var(--accent-4); }
+.player-meta { display: flex; flex-direction: column; }
+.player-name { font-weight: 700; font-size: 14px; }
+.player-score { font-size: 22px; font-weight: 900; color: var(--gold); }
+.vs { font-weight: 800; color: var(--text-mute); font-size: 14px; }
+
+.turn-banner {
+  padding: 10px 16px; text-align: center;
+  font-weight: 700; letter-spacing: 1px;
+  background: rgba(124, 58, 237, 0.15);
+  border-color: rgba(124, 58, 237, 0.4);
+}
+
+.board-wrap { display: grid; place-items: center; padding: 8px; }
+.board {
+  display: grid; gap: 6px;
+  width: min(92vw, 560px); aspect-ratio: 1;
+  padding: 10px; border-radius: var(--radius);
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--panel-border);
+  position: relative;
+}
+.cell {
+  background: var(--cell-bg);
+  border: 1px solid var(--board-line);
+  border-radius: 10px;
+  display: grid; place-items: center;
+  font-size: clamp(20px, 6vw, 48px);
+  font-weight: 900;
+  cursor: pointer;
+  transition: background 150ms ease, transform 150ms ease;
+  position: relative;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.cell:hover:not(.filled):not(.disabled) { background: var(--cell-hover); transform: scale(1.02); }
+.cell.filled { cursor: default; }
+.cell.disabled { cursor: not-allowed; }
+.cell .mark { animation: markPop 0.25s ease; pointer-events: none; }
+.cell.win { animation: winPulse 1s ease infinite; background: rgba(74, 222, 128, 0.18); border-color: var(--accent-3); }
+.cell.win .mark { color: var(--accent-3) !important; }
+@keyframes markPop { 0% { transform: scale(0.2) rotate(-30deg); opacity: 0; } 60% { transform: scale(1.15) rotate(5deg); } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+@keyframes winPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6); } 50% { box-shadow: 0 0 16px 4px rgba(74, 222, 128, 0.5); } }
+
+.game-controls { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.game-result {
+  text-align: center; padding: 24px;
+  border-color: var(--accent);
+  animation: pop 0.4s ease;
+}
+.game-result h2 { font-size: 28px; margin-bottom: 8px; }
+.game-result .reward-line { color: var(--gold); font-weight: 700; margin: 8px 0 16px; }
+.game-result button { margin: 0 6px; }
+.hidden { display: none !important; }
+
+/* ---------- Profile ---------- */
+.profile-header { overflow: hidden; padding: 0; }
+.banner { height: 100px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+.profile-head { display: flex; align-items: center; gap: 16px; padding: 20px; position: relative; }
+.avatar-wrap { position: relative; width: 80px; height: 80px; flex-shrink: 0; margin-top: -30px; }
+.avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-4));
+  font-size: 32px; font-weight: 900; color: white;
+  border: 3px solid var(--bg-1);
+  position: relative; z-index: 1;
+}
+.avatar-frame {
+  position: absolute; inset: -6px;
+  border-radius: 50%;
+  border: 3px solid var(--accent-2);
+  pointer-events: none;
+}
+.profile-id { flex: 1; min-width: 0; }
+.profile-id h2 { font-size: 22px; font-weight: 800; }
+.profile-title { color: var(--accent-2); font-weight: 600; font-size: 13px; margin-bottom: 8px; }
+.profile-xp { display: flex; align-items: center; gap: 10px; }
+.xp-bar { flex: 1; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+.xp-fill { height: 100%; background: linear-gradient(90deg, var(--accent-3), var(--accent-2)); border-radius: 4px; transition: width 600ms ease; }
+.xp-text { font-size: 12px; color: var(--text-dim); white-space: nowrap; }
+
+.profile-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; margin: 16px 0; }
+.stat { text-align: center; padding: 16px 8px; }
+.stat-val { font-size: 26px; font-weight: 900; color: var(--gold); }
+.stat-lbl { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+
+.equipped-row { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.equipped { font-size: 14px; }
+.equipped span { color: var(--text-dim); }
+.equipped b { color: var(--accent-2); }
+
+.recent-list, .history-list, .tx-list { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; }
+.recent-item, .history-item, .tx-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 12px; border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--panel-border);
+  font-size: 13px;
+}
+.history-item .result-win { color: var(--accent-3); font-weight: 700; }
+.history-item .result-loss { color: var(--danger); font-weight: 700; }
+.history-item .result-draw { color: var(--warn); font-weight: 700; }
+.tx-item .amount-pos { color: var(--accent-3); font-weight: 700; }
+.tx-item .amount-neg { color: var(--danger); font-weight: 700; }
+.muted { color: var(--text-mute); font-size: 13px; }
+
+/* ---------- Customize ---------- */
+.customize-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 16px; }
+.customize-grid input[type="color"] { height: 42px; padding: 4px; }
+
+/* ---------- Wallet ---------- */
+.wallet-hero { text-align: center; padding: 32px; }
+.wallet-coin-big {
+  font-size: 56px; font-weight: 900;
+  background: linear-gradient(135deg, var(--gold), #fff4c4);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  display: inline-flex; align-items: center; gap: 12px;
+}
+.wallet-coin-big::before {
+  content: ""; width: 48px; height: 48px;
+  background: radial-gradient(circle at 30% 30%, #fff4c4, #fcd34d 60%, #b8860b);
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: inset 0 -3px 6px rgba(0,0,0,0.3), 0 0 16px rgba(252, 211, 77, 0.6);
+}
+.wallet-sub { color: var(--text-dim); font-size: 14px; margin: 4px 0 16px; letter-spacing: 1px; }
+.wallet-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* ---------- Shop & Inventory ---------- */
+.shop-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.tab {
+  padding: 8px 16px; border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--panel-border);
+  font-weight: 700; font-size: 13px;
+  color: var(--text-dim); transition: var(--transition);
+}
+.tab.active { background: var(--accent); color: white; border-color: transparent; }
+.shop-search {
+  display: flex; gap: 12px; align-items: center; padding: 12px;
+  flex-wrap: wrap;
+}
+.shop-search input[type="text"] {
+  flex: 1; min-width: 180px;
+  padding: 10px 12px; border-radius: 10px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--panel-border); color: var(--text);
+}
+.shop-grid {
+  display: grid; gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  margin-top: 12px;
+}
+.shop-item {
+  border-radius: var(--radius);
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: var(--transition);
+  position: relative;
+}
+.shop-item:hover { transform: translateY(-3px); border-color: var(--accent-2); }
+.shop-preview {
+  height: 110px;
+  display: grid; place-items: center;
+  position: relative; overflow: hidden;
+  font-size: 38px; font-weight: 900;
+}
+.shop-preview .preview-mark { font-size: 36px; }
+.shop-info { padding: 12px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.shop-name { font-weight: 700; font-size: 14px; }
+.shop-desc { color: var(--text-dim); font-size: 12px; line-height: 1.4; }
+.shop-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; }
+.rarity-tag {
+  padding: 2px 8px; border-radius: 6px;
+  font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+}
+.rarity-common { background: rgba(160,160,160,0.2); color: #cbd5e1; }
+.rarity-rare { background: rgba(34, 211, 238, 0.2); color: var(--accent-2); }
+.rarity-epic { background: rgba(168, 85, 247, 0.25); color: #c084fc; }
+.rarity-legendary { background: rgba(252, 211, 77, 0.22); color: var(--gold); }
+.rarity-mythic { background: linear-gradient(135deg, rgba(244, 114, 182, 0.3), rgba(252, 211, 77, 0.3)); color: #fff; }
+.price-tag { display: flex; align-items: center; gap: 4px; color: var(--gold); font-weight: 700; font-size: 13px; }
+.shop-actions { display: flex; gap: 6px; margin-top: 8px; }
+.shop-actions .btn { flex: 1; padding: 8px; font-size: 12px; }
+.shop-item.owned { border-color: var(--accent-3); }
+.shop-item.equipped { border-color: var(--gold); box-shadow: 0 0 18px rgba(252, 211, 77, 0.25); }
+.shop-item.locked .shop-preview { filter: grayscale(0.7) brightness(0.6); }
+.lock-overlay {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  background: rgba(0,0,0,0.55);
+  font-size: 28px;
+  backdrop-filter: blur(2px);
+}
+
+/* ---------- Achievements ---------- */
+.progress-summary { padding: 14px 16px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; }
+.progress-summary .xp-bar { height: 10px; }
+
+/* ---------- Settings ---------- */
+.setting-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; border-bottom: 1px solid var(--panel-border);
+}
+.setting-row:last-child { border-bottom: none; }
+.setting-row input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); }
+.setting-row input[type="range"] { width: 160px; accent-color: var(--accent); }
+.prose { line-height: 1.6; }
+.prose h3 { margin: 16px 0 6px; color: var(--accent-2); }
+.prose p { margin-bottom: 8px; color: var(--text-dim); }
+.prose ul, .prose ol { margin: 8px 0 12px 24px; color: var(--text-dim); }
+.prose li { margin-bottom: 4px; }
+.prose code { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); color: var(--accent-2); }
+.prose b { color: var(--text); }
+
+/* ---------- Modal ---------- */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  display: grid; place-items: center;
+  padding: 20px;
+  animation: fadeIn 200ms ease;
+}
+.modal {
+  width: 100%; max-width: 460px;
+  padding: 24px; position: relative;
+  animation: pop 0.3s ease;
+}
+.modal h2 { font-size: 22px; margin-bottom: 12px; }
+.modal h3 { margin-bottom: 8px; }
+.modal p { color: var(--text-dim); margin-bottom: 12px; line-height: 1.5; }
+.modal-close {
+  position: absolute; top: 12px; right: 14px;
+  width: 32px; height: 32px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: rgba(255,255,255,0.08);
+  font-size: 16px; transition: var(--transition);
+}
+.modal-close:hover { background: rgba(255,255,255,0.16); }
+.modal .field { margin-bottom: 12px; }
+.modal .btn { width: 100%; justify-content: center; margin-top: 6px; }
+.redeem-input {
+  font-family: var(--font-mono);
+  font-size: 22px; letter-spacing: 4px;
+  text-align: center; text-transform: uppercase;
+  padding: 14px !important;
+}
+.code-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.code-list div { padding: 8px 12px; background: rgba(255,255,255,0.04); border-radius: 8px; font-family: var(--font-mono); font-size: 13px; }
+
+/* ---------- Toast ---------- */
+.toast-wrap {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  z-index: 200; display: flex; flex-direction: column; gap: 8px;
+  align-items: center; pointer-events: none;
+}
+.toast {
+  padding: 12px 20px; border-radius: 12px;
+  background: var(--panel-strong);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(20px);
+  font-weight: 600; font-size: 14px;
+  box-shadow: var(--shadow);
+  animation: toastIn 0.3s ease;
+  max-width: 90vw;
+}
+.toast.success { border-color: var(--accent-3); color: var(--accent-3); }
+.toast.error { border-color: var(--danger); color: #fca5a5; }
+.toast.info { border-color: var(--accent-2); color: var(--accent-2); }
+@keyframes toastIn { from { transform: translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ---------- Coin sparkle ---------- */
+.coin-fx-layer { position: fixed; inset: 0; pointer-events: none; z-index: 150; overflow: hidden; }
+.coin-spark {
+  position: absolute;
+  width: 22px; height: 22px;
+  background: radial-gradient(circle at 30% 30%, #fff4c4, #fcd34d 60%, #b8860b);
+  border-radius: 50%;
+  animation: sparkFly 1.1s ease-out forwards;
+}
+@keyframes sparkFly {
+  0% { transform: translate(0, 0) scale(0.4); opacity: 1; }
+  100% { transform: translate(var(--dx, 0), var(--dy, -120px)) scale(1.2); opacity: 0; }
+}
+
+/* ---------- Symbol mark styles (data-symbol attribute on .mark) ---------- */
+.mark { font-family: var(--font); }
+.mark[data-style="classic"] { font-weight: 900; }
+.mark[data-style="neon"] { text-shadow: 0 0 8px currentColor, 0 0 16px currentColor; filter: drop-shadow(0 0 4px currentColor); }
+.mark[data-style="lightning"] { font-weight: 900; transform: skewX(-8deg); }
+.mark[data-style="fire"] { background: linear-gradient(180deg, #fef3c7, #f97316, #dc2626); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.6)); }
+.mark[data-style="ice"] { background: linear-gradient(180deg, #e0f2fe, #38bdf8, #0284c7); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.6)); }
+.mark[data-style="star"] { color: var(--gold); text-shadow: 0 0 12px var(--gold); }
+.mark[data-style="moon"] { color: #e0e7ff; text-shadow: 0 0 12px #c7d2fe; }
+.mark[data-style="diamond"] { background: linear-gradient(135deg, #67e8f9, #a5f3fc, #06b6d4); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.mark[data-style="heart"] { color: #f472b6; text-shadow: 0 0 8px #f472b6; }
+.mark[data-style="skull"] { color: #e5e7eb; text-shadow: 0 0 8px #000; }
+.mark[data-style="ghost"] { color: #cbd5e1; text-shadow: 0 0 10px rgba(203, 213, 225, 0.6); }
+.mark[data-style="sword"] { color: #cbd5e1; text-shadow: 0 0 4px #94a3b8; }
+.mark[data-style="shield"] { color: #fbbf24; text-shadow: 0 0 6px #f59e0b; }
+.mark[data-style="crown"] { color: var(--gold); text-shadow: 0 0 10px var(--gold); }
+.mark[data-style="ring"] { color: #fde68a; text-shadow: 0 0 8px #fbbf24; }
+.mark[data-style="robot"] { color: #93c5fd; text-shadow: 0 0 6px #60a5fa; }
+.mark[data-style="alien"] { color: #86efac; text-shadow: 0 0 8px #4ade80; }
+.mark[data-style="flower"] { color: #f9a8d4; text-shadow: 0 0 6px #f472b6; }
+.mark[data-style="butterfly"] { color: #c4b5fd; text-shadow: 0 0 6px #a78bfa; }
+.mark[data-style="pixel"] { font-family: var(--font-mono); image-rendering: pixelated; }
+.mark[data-style="golden"] { background: linear-gradient(135deg, #fef3c7, #fcd34d, #b8860b); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 6px var(--gold)); }
+.mark[data-style="holographic"] { background: linear-gradient(135deg, #f0abfc, #818cf8, #22d3ee, #4ade80); -webkit-background-clip: text; background-clip: text; color: transparent; animation: holoShift 3s linear infinite; background-size: 200% 200%; }
+@keyframes holoShift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+.mark[data-style="animated"] { animation: markPop 0.4s ease, floatMark 2s ease-in-out infinite; }
+@keyframes floatMark { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+
+/* =========================================================
+   50+ ARENA THEMES — applied via body[data-arena="..."]
+   Each arena defines: --arena-bg (body bg), --arena-cell,
+   --arena-line, --arena-x, --arena-o, --arena-glow, plus
+   a unique animated backdrop for .backdrop-fx.
+   ========================================================= */
+
+/* Helper: arena-tinted board */
+body[data-arena] .board { background: var(--arena-cell-bg, rgba(0,0,0,0.3)); border-color: var(--arena-line, var(--panel-border)); }
+body[data-arena] .cell { background: var(--arena-cell, rgba(255,255,255,0.04)); border-color: var(--arena-line, var(--board-line)); }
+body[data-arena] .cell:hover:not(.filled):not(.disabled) { background: var(--arena-cell-hover, rgba(255,255,255,0.09)); }
+body[data-arena] .player-symbol.x, body[data-arena] .mark.x { color: var(--arena-x, var(--accent-2)); }
+body[data-arena] .player-symbol.o, body[data-arena] .mark.o { color: var(--arena-o, var(--accent-4)); }
+body[data-arena] .turn-banner { background: var(--arena-tint, rgba(124, 58, 237, 0.15)); border-color: var(--arena-line, var(--panel-border)); }
+
+/* ---- 1. Neon Cyber City ---- */
+body[data-arena="neon-cyber-city"] {
+  --arena-bg: #0a0118;
+  --arena-cell-bg: rgba(20, 0, 40, 0.6);
+  --arena-cell: rgba(255, 0, 200, 0.06);
+  --arena-cell-hover: rgba(255, 0, 200, 0.15);
+  --arena-line: rgba(255, 0, 200, 0.35);
+  --arena-x: #00fff0;
+  --arena-o: #ff00d4;
+  --arena-tint: rgba(255, 0, 200, 0.12);
+  background: linear-gradient(180deg, #0a0118, #1a0033 60%, #0a0118);
+}
+body[data-arena="neon-cyber-city"] .backdrop-fx {
+  background:
+    repeating-linear-gradient(0deg, rgba(255,0,200,0.04) 0 1px, transparent 1px 60px),
+    repeating-linear-gradient(90deg, rgba(0,255,240,0.04) 0 1px, transparent 1px 60px),
+    radial-gradient(ellipse at 50% 100%, rgba(255, 0, 200, 0.25), transparent 60%);
+}
+
+/* ---- 2. Space Galaxy ---- */
+body[data-arena="space-galaxy"] {
+  --arena-bg: #020010;
+  --arena-cell-bg: rgba(20, 10, 50, 0.6);
+  --arena-cell: rgba(160, 130, 255, 0.06);
+  --arena-cell-hover: rgba(160, 130, 255, 0.15);
+  --arena-line: rgba(160, 130, 255, 0.3);
+  --arena-x: #c4b5fd;
+  --arena-o: #fbbf24;
+  --arena-tint: rgba(124, 58, 237, 0.15);
+  background: radial-gradient(ellipse at 30% 20%, #2a0a4a, #020010 70%);
+}
+body[data-arena="space-galaxy"] .backdrop-stars { opacity: 1; animation: drift 30s linear infinite; }
+
+/* ---- 3. Minecraft-Inspired Block World ---- */
+body[data-arena="block-world"] {
+  --arena-bg: #1f3a1f;
+  --arena-cell-bg: rgba(60, 100, 40, 0.5);
+  --arena-cell: rgba(120, 180, 80, 0.1);
+  --arena-cell-hover: rgba(120, 180, 80, 0.25);
+  --arena-line: rgba(120, 180, 80, 0.4);
+  --arena-x: #7cb342;
+  --arena-o: #a1887f;
+  --arena-tint: rgba(124, 179, 66, 0.15);
+  background: linear-gradient(180deg, #4a7a30 0%, #1f3a1f 60%, #2a1a10 100%);
+}
+body[data-arena="block-world"] .backdrop-fx {
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0 32px, transparent 32px 64px),
+    repeating-linear-gradient(90deg, rgba(0,0,0,0.1) 0 32px, transparent 32px 64px);
+}
+
+/* ---- 4. Underwater Ocean ---- */
+body[data-arena="underwater-ocean"] {
+  --arena-bg: #021526;
+  --arena-cell-bg: rgba(10, 60, 100, 0.5);
+  --arena-cell: rgba(100, 200, 255, 0.08);
+  --arena-cell-hover: rgba(100, 200, 255, 0.2);
+  --arena-line: rgba(100, 200, 255, 0.35);
+  --arena-x: #22d3ee;
+  --arena-o: #fde047;
+  --arena-tint: rgba(34, 211, 238, 0.12);
+  background: linear-gradient(180deg, #0a4a6e 0%, #021526 70%);
+}
+body[data-arena="underwater-ocean"] .backdrop-fx {
+  background: radial-gradient(ellipse at 50% 0%, rgba(100,200,255,0.25), transparent 60%);
+  animation: waveBg 8s ease-in-out infinite;
+}
+@keyframes waveBg { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+
+/* ---- 5. Haunted Graveyard ---- */
+body[data-arena="haunted-graveyard"] {
+  --arena-bg: #0a0a0a;
+  --arena-cell-bg: rgba(30, 20, 30, 0.7);
+  --arena-cell: rgba(120, 100, 120, 0.06);
+  --arena-cell-hover: rgba(180, 100, 200, 0.15);
+  --arena-line: rgba(120, 100, 120, 0.3);
+  --arena-x: #c084fc;
+  --arena-o: #4ade80;
+  --arena-tint: rgba(120, 100, 120, 0.15);
+  background: linear-gradient(180deg, #1a0a1a, #0a0a0a 70%);
+}
+body[data-arena="haunted-graveyard"] .backdrop-fx {
+  background: radial-gradient(circle at 30% 80%, rgba(180,100,200,0.15), transparent 40%),
+              radial-gradient(circle at 70% 70%, rgba(74,222,128,0.1), transparent 40%);
+  animation: fogDrift 12s ease-in-out infinite;
+}
+@keyframes fogDrift { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+
+/* ---- 6. Sakura Garden ---- */
+body[data-arena="sakura-garden"] {
+  --arena-bg: #2a0a1a;
+  --arena-cell-bg: rgba(80, 20, 50, 0.5);
+  --arena-cell: rgba(255, 182, 193, 0.1);
+  --arena-cell-hover: rgba(255, 182, 193, 0.25);
+  --arena-line: rgba(255, 182, 193, 0.4);
+  --arena-x: #ff9eb5;
+  --arena-o: #c4b5fd;
+  --arena-tint: rgba(255, 158, 181, 0.15);
+  background: linear-gradient(180deg, #ff9eb5 0%, #2a0a1a 50%);
+}
+body[data-arena="sakura-garden"] .backdrop-fx {
+  background: radial-gradient(circle at 80% 20%, rgba(255,182,193,0.3), transparent 40%),
+              radial-gradient(circle at 20% 70%, rgba(196,181,253,0.2), transparent 40%);
+}
+
+/* ---- 7. Lava Volcano ---- */
+body[data-arena="lava-volcano"] {
+  --arena-bg: #1a0500;
+  --arena-cell-bg: rgba(60, 20, 0, 0.6);
+  --arena-cell: rgba(255, 100, 0, 0.08);
+  --arena-cell-hover: rgba(255, 100, 0, 0.2);
+  --arena-line: rgba(255, 100, 0, 0.4);
+  --arena-x: #f97316;
+  --arena-o: #fde047;
+  --arena-tint: rgba(249, 115, 22, 0.15);
+  background: linear-gradient(180deg, #2a0a00, #1a0500 60%, #4a1500 100%);
+}
+body[data-arena="lava-volcano"] .backdrop-fx {
+  background: radial-gradient(ellipse at 50% 100%, rgba(249, 115, 22, 0.5), transparent 60%);
+  animation: lavaGlow 3s ease-in-out infinite alternate;
+}
+@keyframes lavaGlow { from { opacity: 0.5; } to { opacity: 1; } }
+
+/* ---- 8. Ice Kingdom ---- */
+body[data-arena="ice-kingdom"] {
+  --arena-bg: #051a2a;
+  --arena-cell-bg: rgba(20, 60, 100, 0.5);
+  --arena-cell: rgba(200, 240, 255, 0.08);
+  --arena-cell-hover: rgba(200, 240, 255, 0.2);
+  --arena-line: rgba(200, 240, 255, 0.4);
+  --arena-x: #93c5fd;
+  --arena-o: #e0f2fe;
+  --arena-tint: rgba(147, 197, 253, 0.15);
+  background: linear-gradient(180deg, #0c4a6e 0%, #051a2a 60%);
+}
+body[data-arena="ice-kingdom"] .backdrop-fx {
+  background: radial-gradient(ellipse at 50% 0%, rgba(200, 240, 255, 0.25), transparent 60%);
+}
+
+/* ---- 9. Football Stadium ---- */
+body[data-arena="football-stadium"] {
+  --arena-bg: #0a3a0a;
+  --arena-cell-bg: rgba(20, 80, 20, 0.6);
+  --arena-cell: rgba(255, 255, 255, 0.08);
+  --arena-cell-hover: rgba(255, 255, 255, 0.2);
+  --arena-line: rgba(255, 255, 255, 0.4);
+  --arena-x: #fbbf24;
+  --arena-o: #ffffff;
+  --arena-tint: rgba(251, 191, 36, 0.15);
+  background: linear-gradient(180deg, #14532d, #052e16);
+}
+body[data-arena="football-stadium"] .backdrop-fx {
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0 40px, transparent 40px 80px);
+}
+
+/* ---- 10. Retro Arcade ---- */
+body[data-arena="retro-arcade"] {
+  --arena-bg: #0a0014;
+  --arena-cell-bg: rgba(40, 0, 60, 0.7);
+  --arena-cell: rgba(255, 0, 200, 0.08);
+  --arena-cell-hover: rgba(255, 0, 200, 0.2);
+  --arena-line: rgba(255, 0, 200, 0.4);
+  --arena-x: #00ffff;
+  --arena-o: #ff00ff;
+  --arena-tint: rgba(255, 0, 255, 0.15);
+  background: linear-gradient(180deg, #1a0033, #0a0014 60%);
+}
+body[data-arena="retro-arcade"] .backdrop-fx {
+  background:
+    linear-gradient(180deg, transparent 0%, rgba(255,0,255,0.05) 50%, transparent 100%),
+    repeating-linear-gradient(0deg, transparent 0 3px, rgba(0,255,255,0.04) 3px 4px);
+  animation: scanlines 8s linear infinite;
+}
+@keyframes scanlines { from { background-position: 0 0; } to { background-position: 0 100px; } }
+
+/* ---- 11. Desert Temple ---- */
+body[data-arena="desert-temple"] {
+  --arena-bg: #2a1a05;
+  --arena-cell-bg: rgba(80, 50, 20, 0.6);
+  --arena-cell: rgba(255, 200, 100, 0.08);
+  --arena-cell-hover: rgba(255, 200, 100, 0.2);
+  --arena-line: rgba(255, 200, 100, 0.4);
+  --arena-x: #fbbf24;
+  --arena-o: #fef3c7;
+  --arena-tint: rgba(251, 191, 36, 0.15);
+  background: linear-gradient(180deg, #92400e, #2a1a05 70%);
+}
+
+/* ---- 12. Candy Kingdom ---- */
+body[data-arena="candy-kingdom"] {
+  --arena-bg: #2a0a2a;
+  --arena-cell-bg: rgba(80, 20, 80, 0.5);
+  --arena-cell: rgba(255, 200, 240, 0.1);
+  --arena-cell-hover: rgba(255, 200, 240, 0.25);
+  --arena-line: rgba(255, 200, 240, 0.4);
+  --arena-x: #f472b6;
+  --arena-o: #c4b5fd;
+  --arena-tint: rgba(244, 114, 182, 0.15);
+  background: linear-gradient(135deg, #ec4899, #8b5cf6 50%, #2a0a2a);
+}
+
+/* ---- 13. Forest Adventure ---- */
+body[data-arena="forest-adventure"] {
+  --arena-bg: #0a1a0a;
+  --arena-cell-bg: rgba(20, 50, 20, 0.6);
+  --arena-cell: rgba(140, 220, 100, 0.08);
+  --arena-cell-hover: rgba(140, 220, 100, 0.2);
+  --arena-line: rgba(140, 220, 100, 0.4);
+  --arena-x: #84cc16;
+  --arena-o: #fbbf24;
+  --arena-tint: rgba(132, 204, 22, 0.15);
+  background: linear-gradient(180deg, #14532d, #052e16 70%);
+}
+
+/* ---- 14. Futuristic Laboratory ---- */
+body[data-arena="futuristic-laboratory"] {
+  --arena-bg: #050a14;
+  --arena-cell-bg: rgba(10, 30, 60, 0.6);
+  --arena-cell: rgba(100, 220, 255, 0.08);
+  --arena-cell-hover: rgba(100, 220, 255, 0.2);
+  --arena-line: rgba(100, 220, 255, 0.4);
+  --arena-x: #22d3ee;
+  --arena-o: #a78bfa;
+  --arena-tint: rgba(34, 211, 238, 0.15);
+  background: linear-gradient(180deg, #0c1a2e, #050a14 70%);
+}
+body[data-arena="futuristic-laboratory"] .backdrop-fx {
+  background:
+    repeating-linear-gradient(0deg, rgba(100,220,255,0.04) 0 1px, transparent 1px 40px),
+    repeating-linear-gradient(90deg, rgba(100,220,255,0.04) 0 1px, transparent 1px 40px);
+}
+
+/* ---- 15. Golden Palace ---- */
+body[data-arena="golden-palace"] {
+  --arena-bg: #1a0f00;
+  --arena-cell-bg: rgba(60, 40, 0, 0.6);
+  --arena-cell: rgba(255, 215, 0, 0.08);
+  --arena-cell-hover: rgba(255, 215, 0, 0.2);
+  --arena-line: rgba(255, 215, 0, 0.4);
+  --arena-x: #fcd34d;
+  --arena-o: #fef9c3;
+  --arena-tint: rgba(252, 211, 77, 0.15);
+  background: linear-gradient(180deg, #422006, #1a0f00 70%);
+}
+
+/* ---- 16. Rainbow World ---- */
+body[data-arena="rainbow-world"] {
+  --arena-bg: #0a0014;
+  --arena-cell-bg: rgba(20, 0, 40, 0.6);
+  --arena-cell: rgba(255, 255, 255, 0.08);
+  --arena-cell-hover: rgba(255, 255, 255, 0.2);
+  --arena-line: rgba(255, 255, 255, 0.4);
+  --arena-x: #f472b6;
+  --arena-o: #4ade80;
+  --arena-tint: rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, #ef4444, #f59e0b, #84cc16, #06b6d4, #6366f1, #a855f7);
+  background-size: 400% 400%;
+  animation: rainbowShift 20s linear infinite;
+}
+@keyframes rainbowShift { 0% { background-position: 0% 50%; } 100% { background-position: 400% 50%; } }
+
+/* ---- 17. Shadow Dimension ---- */
+body[data-arena="shadow-dimension"] {
+  --arena-bg: #000;
+  --arena-cell-bg: rgba(20, 20, 20, 0.7);
+  --arena-cell: rgba(120, 120, 120, 0.06);
+  --arena-cell-hover: rgba(180, 180, 180, 0.15);
+  --arena-line: rgba(120, 120, 120, 0.3);
+  --arena-x: #9ca3af;
+  --arena-o: #6b7280;
+  --arena-tint: rgba(120, 120, 120, 0.15);
+  background: radial-gradient(ellipse at center, #1a1a1a, #000 70%);
+}
+
+/* ---- 18. Crystal Cave ---- */
+body[data-arena="crystal-cave"] {
+  --arena-bg: #0a0520;
+  --arena-cell-bg: rgba(40, 20, 80, 0.5);
+  --arena-cell: rgba(180, 140, 255, 0.1);
+  --arena-cell-hover: rgba(180, 140, 255, 0.25);
+  --arena-line: rgba(180, 140, 255, 0.4);
+  --arena-x: #c4b5fd;
+  --arena-o: #67e8f9;
+  --arena-tint: rgba(196, 181, 253, 0.15);
+  background: radial-gradient(ellipse at 50% 50%, #2a0a4a, #0a0520 70%);
+}
+
+/* ---- 19. Moon Base ---- */
+body[data-arena="moon-base"] {
+  --arena-bg: #0a0a14;
+  --arena-cell-bg: rgba(30, 30, 50, 0.6);
+  --arena-cell: rgba(200, 200, 220, 0.08);
+  --arena-cell-hover: rgba(200, 200, 220, 0.2);
+  --arena-line: rgba(200, 200, 220, 0.4);
+  --arena-x: #e5e7eb;
+  --arena-o: #60a5fa;
+  --arena-tint: rgba(229, 231, 235, 0.12);
+  background: linear-gradient(180deg, #1a1a2e, #0a0a14 70%);
+}
+
+/* ---- 20. Dragon Arena ---- */
+body[data-arena="dragon-arena"] {
+  --arena-bg: #1a0500;
+  --arena-cell-bg: rgba(60, 20, 0, 0.6);
+  --arena-cell: rgba(255, 80, 0, 0.1);
+  --arena-cell-hover: rgba(255, 80, 0, 0.22);
+  --arena-line: rgba(255, 80, 0, 0.4);
+  --arena-x: #ef4444;
+  --arena-o: #fbbf24;
+  --arena-tint: rgba(239, 68, 68, 0.15);
+  background: radial-gradient(ellipse at 50% 100%, #4a0a00, #1a0500 70%);
+}
+
+/* ---- 21. Deep Forest ---- */
+body[data-arena="deep-forest"] {
+  --arena-bg: #050f08;
+  --arena-cell-bg: rgba(10, 40, 20, 0.6);
+  --arena-cell: rgba(80, 180, 100, 0.08);
+  --arena-cell-hover: rgba(80, 180, 100, 0.2);
+  --arena-line: rgba(80, 180, 100, 0.35);
+  --arena-x: #4ade80;
+  --arena-o: #fde047;
+  --arena-tint: rgba(74, 222, 128, 0.12);
+  background: linear-gradient(180deg, #14532d, #050f08 70%);
+}
+
+/* ---- 22. Jungle Temple ---- */
+body[data-arena="jungle-temple"] {
+  --arena-bg: #0a1a05;
+  --arena-cell-bg: rgba(40, 60, 20, 0.6);
+  --arena-cell: rgba(180, 200, 80, 0.08);
+  --arena-cell-hover: rgba(180, 200, 80, 0.2);
+  --arena-line: rgba(180, 200, 80, 0.35);
+  --arena-x: #a3e635;
+  --arena-o: #d97706;
+  --arena-tint: rgba(163, 230, 53, 0.12);
+  background: linear-gradient(180deg, #365314, #0a1a05 70%);
+}
+
+/* ---- 23. Waterfall Valley ---- */
+body[data-arena="waterfall-valley"] {
+  --arena-bg: #02141a;
+  --arena-cell-bg: rgba(10, 50, 70, 0.6);
+  --arena-cell: rgba(120, 220, 240, 0.08);
+  --arena-cell-hover: rgba(120, 220, 240, 0.2);
+  --arena-line: rgba(120, 220, 240, 0.4);
+  --arena-x: #22d3ee;
+  --arena-o: #a7f3d0;
+  --arena-tint: rgba(34, 211, 238, 0.12);
+  background: linear-gradient(180deg, #155e75, #02141a 70%);
+}
+
+/* ---- 24. Frozen Lake ---- */
+body[data-arena="frozen-lake"] {
+  --arena-bg: #0a1a2a;
+  --arena-cell-bg: rgba(40, 80, 120, 0.5);
+  --arena-cell: rgba(220, 240, 255, 0.1);
+  --arena-cell-hover: rgba(220, 240, 255, 0.25);
+  --arena-line: rgba(220, 240, 255, 0.4);
+  --arena-x: #bae6fd;
+  --arena-o: #c7d2fe;
+  --arena-tint: rgba(186, 230, 253, 0.15);
+  background: linear-gradient(180deg, #0c4a6e, #0a1a2a 70%);
+}
+
+/* ---- 25. Desert Oasis ---- */
+body[data-arena="desert-oasis"] {
+  --arena-bg: #2a1a05;
+  --arena-cell-bg: rgba(80, 60, 20, 0.6);
+  --arena-cell: rgba(120, 200, 220, 0.1);
+  --arena-cell-hover: rgba(120, 200, 220, 0.22);
+  --arena-line: rgba(120, 200, 220, 0.4);
+  --arena-x: #fbbf24;
+  --arena-o: #38bdf8;
+  --arena-tint: rgba(251, 191, 36, 0.15);
+  background: linear-gradient(180deg, #92400e, #2a1a05 70%);
+}
+
+/* ---- 26. Rainbow Meadow ---- */
+body[data-arena="rainbow-meadow"] {
+  --arena-bg: #0a1a05;
+  --arena-cell-bg: rgba(40, 60, 20, 0.5);
+  --arena-cell: rgba(255, 255, 255, 0.1);
+  --arena-cell-hover: rgba(255, 255, 255, 0.22);
+  --arena-line: rgba(255, 255, 255, 0.4);
+  --arena-x: #f472b6;
+  --arena-o: #fbbf24;
+  --arena-tint: rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, #f472b6, #fbbf24, #4ade80, #38bdf8);
+  background-size: 300% 300%;
+  animation: rainbowShift 25s linear infinite;
+}
+
+/* ---- 27. Mushroom Forest ---- */
+body[data-arena="mushroom-forest"] {
+  --arena-bg: #1a0a14;
+  --arena-cell-bg: rgba(60, 20, 40, 0.6);
+  --arena-cell: rgba(255, 200, 220, 0.08);
+  --arena-cell-hover: rgba(255, 200, 220, 0.2);
+  --arena-line: rgba(255, 200, 220, 0.4);
+  --arena-x: #f9a8d4;
+  --arena-o: #fef3c7;
+  --arena-tint: rgba(249, 168, 212, 0.15);
+  background: radial-gradient(ellipse at 50% 80%, #831843, #1a0a14 70%);
+}
+
+/* ---- 28. Ancient Tree ---- */
+body[data-arena="ancient-tree"] {
+  --arena-bg: #0f0a05;
+  --arena-cell-bg: rgba(60, 40, 20, 0.6);
+  --arena-cell: rgba(200, 160, 80, 0.08);
+  --arena-cell-hover: rgba(200, 160, 80, 0.2);
+  --arena-line: rgba(200, 160, 80, 0.35);
+  --arena-x: #d6a85a;
+  --arena-o: #84cc16;
+  --arena-tint: rgba(214, 168, 90, 0.12);
+  background: linear-gradient(180deg, #422006, #0f0a05 70%);
+}
+
+/* ---- 29. Dragon Kingdom ---- */
+body[data-arena="dragon-kingdom"] {
+  --arena-bg: #1a0505;
+  --arena-cell-bg: rgba(60, 20, 20, 0.6);
+  --arena-cell: rgba(255, 80, 80, 0.1);
+  --arena-cell-hover: rgba(255, 80, 80, 0.22);
+  --arena-line: rgba(255, 80, 80, 0.4);
+  --arena-x: #dc2626;
+  --arena-o: #fbbf24;
+  --arena-tint: rgba(220, 38, 38, 0.15);
+  background: radial-gradient(ellipse at 50% 100%, #7f1d1d, #1a0505 70%);
+}
+
+/* ---- 30. Wizard Tower ---- */
+body[data-arena="wizard-tower"] {
+  --arena-bg: #0a051a;
+  --arena-cell-bg: rgba(30, 20, 60, 0.6);
+  --arena-cell: rgba(180, 140, 255, 0.1);
+  --arena-cell-hover: rgba(180, 140, 255, 0.22);
+  --arena-line: rgba(180, 140, 255, 0.4);
+  --arena-x: #a78bfa;
+  --arena-o: #fde047;
+  --arena-tint: rgba(167, 139, 250, 0.15);
+  background: linear-gradient(180deg, #4c1d95, #0a051a 70%);
+}
+
+/* ---- 31. Fairy World ---- */
+body[data-arena="fairy-world"] {
+  --arena-bg: #1a0a2a;
+  --arena-cell-bg: rgba(80, 30, 100, 0.5);
+  --arena-cell: rgba(255, 200, 240, 0.1);
+  --arena-cell-hover: rgba(255, 200, 240, 0.22);
+  --arena-line: rgba(255, 200, 240, 0.4);
+  --arena-x: #f0abfc;
+  --arena-o: #c4b5fd;
+  --arena-tint: rgba(240, 171, 252, 0.15);
+  background: radial-gradient(ellipse at 30% 30%, #d946ef, #1a0a2a 70%);
+}
+
+/* ---- 32. Demon Castle ---- */
+body[data-arena="demon-castle"] {
+  --arena-bg: #1a0000;
+  --arena-cell-bg: rgba(60, 0, 0, 0.6);
+  --arena-cell: rgba(220, 40, 40, 0.1);
+  --arena-cell-hover: rgba(220, 40, 40, 0.22);
+  --arena-line: rgba(220, 40, 40, 0.4);
+  --arena-x: #ef4444;
+  --arena-o: #1f2937;
+  --arena-tint: rgba(239, 68, 68, 0.15);
+  background: radial-gradient(ellipse at 50% 100%, #7f1d1d, #1a0000 70%);
+}
+
+/* ---- 33. Angel Heaven ---- */
+body[data-arena="angel-heaven"] {
+  --arena-bg: #0a1430;
+  --arena-cell-bg: rgba(80, 120, 200, 0.4);
+  --arena-cell: rgba(255, 255, 255, 0.12);
+  --arena-cell-hover: rgba(255, 255, 255, 0.25);
+  --arena-line: rgba(255, 255, 255, 0.5);
+  --arena-x: #fef9c3;
+  --arena-o: #bae6fd;
+  --arena-tint: rgba(254, 249, 195, 0.18);
+  background: linear-gradient(180deg, #1e3a8a, #0a1430 70%);
+}
+
+/* ---- 34. Dark Dimension ---- */
+body[data-arena="dark-dimension"] {
+  --arena-bg: #050008;
+  --arena-cell-bg: rgba(20, 0, 30, 0.7);
+  --arena-cell: rgba(120, 0, 180, 0.1);
+  --arena-cell-hover: rgba(120, 0, 180, 0.22);
+  --arena-line: rgba(120, 0, 180, 0.4);
+  --arena-x: #a855f7;
+  --arena-o: #1f2937;
+  --arena-tint: rgba(168, 85, 247, 0.15);
+  background: radial-gradient(ellipse at 50% 50%, #2a0a3a, #050008 70%);
+}
+
+/* ---- 35. Magic School ---- */
+body[data-arena="magic-school"] {
+  --arena-bg: #0a0a1a;
+  --arena-cell-bg: rgba(30, 30, 60, 0.6);
+  --arena-cell: rgba(255, 215, 0, 0.08);
+  --arena-cell-hover: rgba(255, 215, 0, 0.2);
+  --arena-line: rgba(255, 215, 0, 0.4);
+  --arena-x: #fbbf24;
+  --arena-o: #ef4444;
+  --arena-tint: rgba(251, 191, 36, 0.15);
+  background: linear-gradient(180deg, #1e1b4b, #0a0a1a 70%);
+}
+
+/* ---- 36. Crystal Palace ---- */
+body[data-arena="crystal-palace"] {
+  --arena-bg: #05101a;
+  --arena-cell-bg: rgba(20, 50, 80, 0.5);
+  --arena-cell: rgba(180, 220, 255, 0.1);
+  --arena-cell-hover: rgba(180, 220, 255, 0.22);
+  --arena-line: rgba(180, 220, 255, 0.4);
+  --arena-x: #67e8f9;
+  --arena-o: #c4b5fd;
+  --arena-tint: rgba(103, 232, 249, 0.15);
+  background: linear-gradient(180deg, #0e7490, #05101a 70%);
+}
+
+/* ---- 37. Floating Islands ---- */
+body[data-arena="floating-islands"] {
+  --arena-bg: #1a2a4a;
+  --arena-cell-bg: rgba(40, 60, 100, 0.5);
+  --arena-cell: rgba(255, 255, 255, 0.1);
+  --arena-cell-hover: rgba(255, 255, 255, 0.22);
+  --arena-line: rgba(255, 255, 255, 0.4);
+  --arena-x: #fde047;
+  --arena-o: #bae6fd;
+  --arena-tint: rgba(253, 224, 71, 0.15);
+  background: linear-gradient(180deg, #60a5fa, #1a2a4a 70%);
+}
+
+/* ---- 38. Mythical Arena ---- */
+body[data-arena="mythical-arena"] {
+  --arena-bg: #1a0a2a;
+  --arena-cell-bg: rgba(60, 30, 80, 0.6);
+  --arena-cell: rgba(255, 200, 100, 0.1);
+  --arena-cell-hover: rgba(255, 200, 100, 0.22);
+  --arena-line: rgba(255, 200, 100, 0.4);
+  --arena-x: #fbbf24;
+  --arena-o: #c4b5fd;
+  --arena-tint: rgba(251, 191, 36, 0.15);
+  background: radial-gradient(ellipse at 50% 50%, #4c1d95, #1a0a2a 70%);
+}
+
+/* ---- 39. Mars Colony ---- */
+body[data-arena="mars-colony"] {
+  --arena-bg: #2a0a05;
+  --arena-cell-bg: rgba(80, 30, 20, 0.6);
+  --arena-cell: rgba(255, 150, 100, 0.1);
+  --arena-cell-hover: rgba(255, 150, 100, 0.22);
+  --arena-line: rgba(255, 150, 100, 0.4);
+  --arena-x: #fb923c;
+  --arena-o: #fde047;
+  --arena-tint: rgba(251, 146, 60, 0.15);
+  background: linear-gradient(180deg, #9a3412, #2a0a05 70%);
+}
+
+/* ---- 40. Black Hole ---- */
+body[data-arena="black-hole"] {
+  --arena-bg: #000;
+  --arena-cell-bg: rgba(15, 15, 30, 0.7);
+  --arena-cell: rgba(180, 100, 255, 0.1);
+  --arena-cell-hover: rgba(180, 100, 255, 0.22);
+  --arena-line: rgba(180, 100, 255, 0.4);
+  --arena-x: #c4b5fd;
+  --arena-o: #f472b6;
+  --arena-tint: rgba(196, 181, 253, 0.15);
+  background: radial-gradient(circle at 50% 50%, #1a0033 0%, #000 70%);
+  animation: blackholeSpin 30s linear infinite;
+}
+@keyframes blackholeSpin { from {} to {} }
+
+/* ---- 41. Saturn Rings ---- */
+body[data-arena="saturn-rings"] {
+  --arena-bg: #1a0f05;
+  --arena-cell-bg: rgba(80, 60, 20, 0.5);
+  --arena-cell: rgba(255, 215, 150, 0.1);
+  --arena-cell-hover: rgba(255, 215, 150, 0.22);
+  --arena-line: rgba(255, 215, 150, 0.4);
+  --arena-x: #fcd34d;
+  --arena-o: #fde68a;
+  --arena-tint: rgba(252, 211, 77, 0.15);
+  background: radial-gradient(ellipse 80% 30% at 50% 50%, #f59e0b, transparent 60%), #1a0f05;
+}
+
+/* ---- 42. Alien Planet ---- */
+body[data-arena="alien-planet"] {
+  --arena-bg: #0a2a1a;
+  --arena-cell-bg: rgba(20, 80, 40, 0.5);
+  --arena-cell: rgba(150, 255, 200, 0.1);
+  --arena-cell-hover: rgba(150, 255, 200, 0.22);
+  --arena-line: rgba(150, 255, 200, 0.4);
+  --arena-x: #4ade80;
+  --arena-o: #c4b5fd;
+  --arena-tint: rgba(74, 222, 128, 0.15);
+  background: radial-gradient(ellipse at 50% 80%, #166534, #0a2a1a 70%);
+}
+
+/* ---- 43. Galactic Station ---- */
+body[data-arena="galactic-station"] {
+  --arena-bg: #050a1a;
+  --arena-cell-bg: rgba(20, 40, 80, 0.5);
+  --arena-cell: rgba(100, 220, 255, 0.1);
+  --arena-cell-hover: rgba(100, 220, 255, 0.22);
+  --arena-line: rgba(100, 220, 255, 0.4);
+  --arena-x: #22d3ee;
+  --arena-o: #fbbf24;
+  --arena-tint: rgba(34, 211, 238, 0.15);
+  background: linear-gradient(180deg, #1e3a8a, #050a1a 70%);
+}
+
+/* ---- 44. Nebula ---- */
+body[data-arena="nebula"] {
+  --arena-bg: #1a052a;
+  --arena-cell-bg: rgba(60, 20, 80, 0.5);
+  --arena-cell: rgba(255, 100, 200, 0.1);
+  --arena-cell-hover: rgba(255, 100, 200, 0.22);
+  --arena-line: rgba(255, 100, 200, 0.4);
+  --arena-x: #f472b6;
+  --arena-o: #c4b5fd;
+  --arena-tint: rgba(244, 114, 182, 0.15);
+  background: radial-gradient(ellipse at 30% 30%, #be185d, #1a052a 70%);
+}
+
+/* ---- 45. Starship Bridge ---- */
+body[data-arena="starship-bridge"] {
+  --arena-bg: #050a14;
+  --arena-cell-bg: rgba(10, 30, 60, 0.5);
+  --arena-cell: rgba(100, 200, 255, 0.08);
+  --arena-cell-hover: rgba(100, 200, 255, 0.2);
+  --arena-line: rgba(100, 200, 255, 0.4);
+  --arena-x: #22d3ee;
+  --arena-o: #fbbf24;
+  --arena-tint: rgba(34, 211, 238, 0.12);
+  background: linear-gradient(180deg, #1e40af, #050a14 70%);
+}
+
+/* ---- 46. Cosmic Battlefield ---- */
+body[data-arena="cosmic-battlefield"] {
+  --arena-bg: #0a0014;
+  --arena-cell-bg: rgba(40, 0, 60, 0.6);
+  --arena-cell: rgba(255, 0, 100, 0.1);
+  --arena-cell-hover: rgba(255, 0, 100, 0.22);
+  --arena-line: rgba(255, 0, 100, 0.4);
+  --arena-x: #ec4899;
+  --arena-o: #22d3ee;
+  --arena-tint: rgba(236, 72, 153, 0.15);
+  background: radial-gradient(ellipse at 50% 50%, #500a4a, #0a0014 70%);
+}
+
+/* ---- 47. Parallel Universe ---- */
+body[data-arena="parallel-universe"] {
+  --arena-bg: #14001a;
+  --arena-cell-bg: rgba(40, 0, 60, 0.6);
+  --arena-cell: rgba(0, 255, 200, 0.1);
+  --arena-cell-hover: rgba(0, 255, 200, 0.22);
+  --arena-line: rgba(0, 255, 200, 0.4);
+  --arena-x: #2dd4bf;
+  --arena-o: #f472b6;
+  --arena-tint: rgba(45, 212, 191, 0.15);
+  background: linear-gradient(135deg, #0e7490, #500a4a);
+}
+
+/* ---- 48. Tokyo Night ---- */
+body[data-arena="tokyo-night"] {
+  --arena-bg: #0a0118;
+  --arena-cell-bg: rgba(20, 0, 40, 0.6);
+  --arena-cell: rgba(255, 0, 150, 0.1);
+  --arena-cell-hover: rgba(255, 0, 150, 0.22);
+  --arena-line: rgba(255, 0, 150, 0.4);
+  --arena-x: #00ffff;
+  --arena-o: #ff00aa;
+  --arena-tint: rgba(255, 0, 170, 0.15);
+  background: linear-gradient(180deg, #4a0a4a, #0a0118 70%);
+}
+
+/* ---- 49. New York Rooftops ---- */
+body[data-arena="new-york-rooftops"] {
+  --arena-bg: #050514;
+  --arena-cell-bg: rgba(20, 20, 40, 0.6);
+  --arena-cell: rgba(255, 200, 0, 0.08);
+  --arena-cell-hover: rgba(255, 200, 0, 0.2);
+  --arena-line: rgba(255, 200, 0, 0.4);
+  --arena-x: #fbbf24;
+  --arena-o: #60a5fa;
+  --arena-tint: rgba(251, 191, 36, 0.12);
+  background: linear-gradient(180deg, #1e1b4b, #050514 70%);
+}
+
+/* ---- 50. Dubai Skyline ---- */
+body[data-arena="dubai-skyline"] {
+  --arena-bg: #1a0f00;
+  --arena-cell-bg: rgba(60, 40, 0, 0.6);
+  --arena-cell: rgba(255, 200, 100, 0.08);
+  --arena-cell-hover: rgba(255, 200, 100, 0.2);
+  --arena-line: rgba(255, 200, 100, 0.4);
+  --arena-x: #fcd34d;
+  --arena-o: #fde047;
+  --arena-tint: rgba(252, 211, 77, 0.15);
+  background: linear-gradient(180deg, #f59e0b, #1a0f00 60%);
+}
+
+/* ---- 51. London Fog ---- */
+body[data-arena="london-fog"] {
+  --arena-bg: #1a1a1a;
+  --arena-cell-bg: rgba(40, 40, 50, 0.6);
+  --arena-cell: rgba(200, 200, 220, 0.08);
+  --arena-cell-hover: rgba(200, 200, 220, 0.2);
+  --arena-line: rgba(200, 200, 220, 0.35);
+  --arena-x: #cbd5e1;
+  --arena-o: #94a3b8;
+  --arena-tint: rgba(203, 213, 225, 0.12);
+  background: linear-gradient(180deg, #475569, #1a1a1a 70%);
+}
+
+/* ---- 52. Abandoned City ---- */
+body[data-arena="abandoned-city"] {
+  --arena-bg: #14140a;
+  --arena-cell-bg: rgba(40, 40, 20, 0.6);
+  --arena-cell: rgba(200, 200, 80, 0.06);
+  --arena-cell-hover: rgba(200, 200, 80, 0.18);
+  --arena-line: rgba(200, 200, 80, 0.3);
+  --arena-x: #d9f99d;
+  --arena-o: #84cc16;
+  --arena-tint: rgba(217, 249, 157, 0.1);
+  background: linear-gradient(180deg, #365314, #14140a 70%);
+}
+
+/* ---- 53. Underground Metro ---- */
+body[data-arena="underground-metro"] {
+  --arena-bg: #0a0a0a;
+  --arena-cell-bg: rgba(20, 20, 20, 0.7);
+  --arena-cell: rgba(255, 200, 0, 0.08);
+  --arena-cell-hover: rgba(255, 200, 0, 0.2);
+  --arena-line: rgba(255, 200, 0, 0.35);
+  --arena-x: #facc15;
+  --arena-o: #ef4444;
+  --arena-tint: rgba(250, 204, 21, 0.12);
+  background: linear-gradient(180deg, #1f2937, #0a0a0a 70%);
+}
+
+/* ---- 54. Cyberpunk Street ---- */
+body[data-arena="cyberpunk-street"] {
+  --arena-bg: #0a0118;
+  --arena-cell-bg: rgba(30, 0, 50, 0.6);
+  --arena-cell: rgba(0, 255, 200, 0.1);
+  --arena-cell-hover: rgba(0, 255, 200, 0.22);
+  --arena-line: rgba(0, 255, 200, 0.4);
+  --arena-x: #2dd4bf;
+  --arena-o: #f472b6;
+  --arena-tint: rgba(45, 212, 191, 0.15);
+  background: linear-gradient(180deg, #581c87, #0a0118 70%);
+}
+
+/* ---- 55. Future Megacity ---- */
+body[data-arena="future-megacity"] {
+  --arena-bg: #050a1a;
+  --arena-cell-bg: rgba(20, 40, 80, 0.6);
+  --arena-cell: rgba(100, 255, 200, 0.08);
+  --arena-cell-hover: rgba(100, 255, 200, 0.2);
+  --arena-line: rgba(100, 255, 200, 0.4);
+  --arena-x: #2dd4bf;
+  --arena-o: #fbbf24;
+  --arena-tint: rgba(45, 212, 191, 0.12);
+  background: linear-gradient(180deg, #0c4a6e, #050a1a 70%);
+}
+
+/* ---- 56. Rooftop Arena ---- */
+body[data-arena="rooftop-arena"] {
+  --arena-bg: #1a0a14;
+  --arena-cell-bg: rgba(60, 20, 40, 0.5);
+  --arena-cell: rgba(255, 100, 150, 0.1);
+  --arena-cell-hover: rgba(255, 100, 150, 0.22);
+  --arena-line: rgba(255, 100, 150, 0.4);
+  --arena-x: #fb7185;
+  --arena-o: #fde047;
+  --arena-tint: rgba(251, 113, 133, 0.15);
+  background: linear-gradient(180deg, #be123c, #1a0a14 70%);
+}
+
+/* ---- 57. Pirate Ship ---- */
+body[data-arena="pirate-ship"] {
+  --arena-bg: #05141a;
+  --arena-cell-bg: rgba(40, 30, 10, 0.6);
+  --arena-cell: rgba(255, 200, 100, 0.08);
+  --arena-cell-hover: rgba(255, 200, 100, 0.2);
+  --arena-line: rgba(255, 200, 100, 0.35);
+  --arena-x: #fbbf24;
+  --arena-o: #1e3a8a;
+  --arena-tint: rgba(251, 191, 36, 0.12);
+  background: linear-gradient(180deg, #1e3a8a, #05141a 70%);
+}
+
+/* ---- 58. Lost Island ---- */
+body[data-arena="lost-island"] {
+  --arena-bg: #051a0a;
+  --arena-cell-bg: rgba(20, 60, 30, 0.6);
+  --arena-cell: rgba(255, 220, 100, 0.1);
+  --arena-cell-hover: rgba(255, 220, 100, 0.22);
+  --arena-line: rgba(255, 220, 100, 0.4);
+  --arena-x: #fde047;
+  --arena-o: #4ade80;
+  --arena-tint: rgba(253, 224, 71, 0.15);
+  background: linear-gradient(180deg, #166534, #051a0a 70%);
+}
+
+/* ---- 59. Ancient Egypt ---- */
+body[data-arena="ancient-egypt"] {
+  --arena-bg: #2a1a00;
+  --arena-cell-bg: rgba(80, 60, 0, 0.6);
+  --arena-cell: rgba(255, 215, 0, 0.08);
+  --arena-cell-hover: rgba(255, 215, 0, 0.2);
+  --arena-line: rgba(255, 215, 0, 0.4);
+  --arena-x: #fbbf24;
+  --arena-o: #1e40af;
+  --arena-tint: rgba(251, 191, 36, 0.15);
+  background: linear-gradient(180deg, #b45309, #2a1a00 70%);
+}
+
+/* ---- 60. Pyramid Chamber ---- */
+body[data-arena="pyramid-chamber"] {
+  --arena-bg: #1a0f00;
+  --arena-cell-bg: rgba(60, 40, 0, 0.6);
+  --arena-cell: rgba(255, 200, 50, 0.08);
+  --arena-cell-hover: rgba(255, 200, 50, 0.2);
+  --arena-line: rgba(255, 200, 50, 0.4);
+  --arena-x: #facc15;
+  --arena-o: #b45309;
+  --arena-tint: rgba(250, 204, 21, 0.15);
+  background: radial-gradient(ellipse at 50% 0%, #f59e0b, #1a0f00 70%);
+}
+
+/* ---- 61. Viking Village ---- */
+body[data-arena="viking-village"] {
+  --arena-bg: #0a0f1a;
+  --arena-cell-bg: rgba(20, 30, 50, 0.6);
+  --arena-cell: rgba(180, 200, 220, 0.08);
+  --arena-cell-hover: rgba(180, 200, 220, 0.2);
+  --arena-line: rgba(180, 200, 220, 0.35);
+  --arena-x: #cbd5e1;
+  --arena-o: #dc2626;
+  --arena-tint: rgba(203, 213, 225, 0.12);
+  background: linear-gradient(180deg, #1e3a8a, #0a0f1a 70%);
+}
+
+/* ---- 62. Wild West ---- */
+body[data-arena="wild-west"] {
+  --arena-bg: #2a1a05;
+  --arena-cell-bg: rgba(80, 50, 20, 0.6);
+  --arena-cell: rgba(255, 180, 80, 0.08);
+  --arena-cell-hover: rgba(255, 180, 80, 0.2);
+  --arena-line: rgba(255, 180, 80, 0.35);
+  --arena-x: #d97706;
+  --arena-o: #fef3c7;
+  --arena-tint: rgba(217, 119, 6, 0.12);
+  background: linear-gradient(180deg, #92400e, #2a1a05 70%);
+}
+
+/* ---- 63. Treasure Dungeon ---- */
+body[data-arena="treasure-dungeon"] {
+  --arena-bg: #0a0a05;
+  --arena-cell-bg: rgba(30, 30, 10, 0.7);
+  --arena-cell: rgba(255, 215, 0, 0.08);
+  --arena-cell-hover: rgba(255, 215, 0, 0.2);
+  --arena-line: rgba(255, 215, 0, 0.4);
+  --arena-x: #fbbf24;
+  --arena-o: #4b5563;
+  --arena-tint: rgba(251, 191, 36, 0.12);
+  background: radial-gradient(ellipse at 50% 50%, #422006, #0a0a05 70%);
+}
+
+/* ---- 64. Underwater Kingdom ---- */
+body[data-arena="underwater-kingdom"] {
+  --arena-bg: #02141a;
+  --arena-cell-bg: rgba(10, 50, 70, 0.6);
+  --arena-cell: rgba(100, 200, 255, 0.1);
+  --arena-cell-hover: rgba(100, 200, 255, 0.22);
+  --arena-line: rgba(100, 200, 255, 0.4);
+  --arena-x: #22d3ee;
+  --arena-o: #fbbf24;
+  --arena-tint: rgba(34, 211, 238, 0.15);
+  background: radial-gradient(ellipse at 50% 0%, #0891b2, #02141a 70%);
+}
+
+/* ---- 65. Volcano Core ---- */
+body[data-arena="volcano-core"] {
+  --arena-bg: #1a0000;
+  --arena-cell-bg: rgba(60, 0, 0, 0.6);
+  --arena-cell: rgba(255, 100, 0, 0.1);
+  --arena-cell-hover: rgba(255, 100, 0, 0.22);
+  --arena-line: rgba(255, 100, 0, 0.4);
+  --arena-x: #f97316;
+  --arena-o: #fde047;
+  --arena-tint: rgba(249, 115, 22, 0.15);
+  background: radial-gradient(ellipse at 50% 100%, #dc2626, #1a0000 70%);
+}
+
+/* ---- 66. Jurassic World ---- */
+body[data-arena="jurassic-world"] {
+  --arena-bg: #0a1a05;
+  --arena-cell-bg: rgba(20, 50, 20, 0.6);
+  --arena-cell: rgba(150, 200, 80, 0.08);
+  --arena-cell-hover: rgba(150, 200, 80, 0.2);
+  --arena-line: rgba(150, 200, 80, 0.35);
+  --arena-x: #84cc16;
+  --arena-o: #a16207;
+  --arena-tint: rgba(132, 204, 22, 0.12);
+  background: linear-gradient(180deg, #3f6212, #0a1a05 70%);
+}
+
+/* ---- 67. Arcade World ---- */
+body[data-arena="arcade-world"] {
+  --arena-bg: #0a0014;
+  --arena-cell-bg: rgba(40, 0, 60, 0.7);
+  --arena-cell: rgba(0, 255, 255, 0.1);
+  --arena-cell-hover: rgba(0, 255, 255, 0.22);
+  --arena-line: rgba(0, 255, 255, 0.4);
+  --arena-x: #00ffff;
+  --arena-o: #ff00ff;
+  --arena-tint: rgba(0, 255, 255, 0.15);
+  background: linear-gradient(135deg, #6b21a8, #0a0014 70%);
+}
+
+/* ---- 68. Pixel Kingdom ---- */
+body[data-arena="pixel-kingdom"] {
+  --arena-bg: #1a0a05;
+  --arena-cell-bg: rgba(60, 30, 10, 0.6);
+  --arena-cell: rgba(255, 255, 255, 0.08);
+  --arena-cell-hover: rgba(255, 255, 255, 0.2);
+  --arena-line: rgba(255, 255, 255, 0.35);
+  --arena-x: #4ade80;
+  --arena-o: #f87171;
+  --arena-tint: rgba(74, 222, 128, 0.12);
+  background: linear-gradient(180deg, #166534, #1a0a05 70%);
+}
+
+/* ---- 69. Candy Land ---- */
+body[data-arena="candy-land"] {
+  --arena-bg: #2a0a2a;
+  --arena-cell-bg: rgba(80, 20, 80, 0.5);
+  --arena-cell: rgba(255, 200, 240, 0.1);
+  --arena-cell-hover: rgba(255, 200, 240, 0.22);
+  --arena-line: rgba(255, 200, 240, 0.4);
+  --arena-x: #f472b6;
+  --arena-o: #c4b5fd;
+  --arena-tint: rgba(244, 114, 182, 0.15);
+  background: linear-gradient(135deg, #f472b6, #a855f7, #2a0a2a);
+}
+
+/* ---- 70. Toy World ---- */
+body[data-arena="toy-world"] {
+  --arena-bg: #1a0a14;
+  --arena-cell-bg: rgba(60, 20, 40, 0.5);
+  --arena-cell: rgba(255, 200, 100, 0.1);
+  --arena-cell-hover: rgba(255, 200, 100, 0.22);
+  --arena-line: rgba(255, 200, 100, 0.4);
+  --arena-x: #fbbf24;
+  --arena-o: #f472b6;
+  --arena-tint: rgba(251, 191, 36, 0.15);
+  background: linear-gradient(135deg, #fb923c, #ec4899, #1a0a14);
+}
+
+/* ---- 71. Racing Arena ---- */
+body[data-arena="racing-arena"] {
+  --arena-bg: #0a0a0a;
+  --arena-cell-bg: rgba(30, 30, 30, 0.7);
+  --arena-cell: rgba(255, 255, 255, 0.08);
+  --arena-cell-hover: rgba(255, 255, 255, 0.2);
+  --arena-line: rgba(255, 255, 255, 0.4);
+  --arena-x: #ef4444;
+  --arena-o: #fbbf24;
+  --arena-tint: rgba(239, 68, 68, 0.15);
+  background: linear-gradient(180deg, #1f2937, #0a0a0a 70%);
+}
+body[data-arena="racing-arena"] .backdrop-fx {
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.06) 0 20px, transparent 20px 40px);
+}
+
+/* ---- 72. Chess Kingdom ---- */
+body[data-arena="chess-kingdom"] {
+  --arena-bg: #1a140a;
+  --arena-cell-bg: rgba(60, 50, 30, 0.6);
+  --arena-cell: rgba(220, 200, 150, 0.08);
+  --arena-cell-hover: rgba(220, 200, 150, 0.2);
+  --arena-line: rgba(220, 200, 150, 0.35);
+  --arena-x: #f9fafb;
+  --arena-o: #1f2937;
+  --arena-tint: rgba(249, 250, 241, 0.12);
+  background: linear-gradient(135deg, #44403c, #1a140a 70%);
+}
+
+/* ---- 73. Lava Battlefield ---- */
+body[data-arena="lava-battlefield"] {
+  --arena-bg: #1a0500;
+  --arena-cell-bg: rgba(60, 20, 0, 0.6);
+  --arena-cell: rgba(255, 80, 0, 0.1);
+  --arena-cell-hover: rgba(255, 80, 0, 0.22);
+  --arena-line: rgba(255, 80, 0, 0.4);
+  --arena-x: #f97316;
+  --arena-o: #fde047;
+  --arena-tint: rgba(249, 115, 22, 0.15);
+  background: linear-gradient(180deg, #7c2d12, #1a0500 70%);
+}
+
+/* ---- 74. Glitch World ---- */
+body[data-arena="glitch-world"] {
+  --arena-bg: #0a0014;
+  --arena-cell-bg: rgba(20, 0, 40, 0.7);
+  --arena-cell: rgba(0, 255, 0, 0.08);
+  --arena-cell-hover: rgba(0, 255, 0, 0.2);
+  --arena-line: rgba(0, 255, 0, 0.4);
+  --arena-x: #4ade80;
+  --arena-o: #f472b6;
+  --arena-tint: rgba(74, 222, 128, 0.15);
+  background: linear-gradient(135deg, #14532d, #0a0014 70%);
+  animation: glitchShift 4s steps(4) infinite;
+}
+@keyframes glitchShift { 0%, 100% { filter: hue-rotate(0deg); } 25% { filter: hue-rotate(90deg); } 50% { filter: hue-rotate(180deg); } 75% { filter: hue-rotate(270deg); } }
+
+/* ---- 75. Golden Temple ---- */
+body[data-arena="golden-temple"] {
+  --arena-bg: #1a0f00;
+  --arena-cell-bg: rgba(60, 40, 0, 0.6);
+  --arena-cell: rgba(255, 215, 0, 0.1);
+  --arena-cell-hover: rgba(255, 215, 0, 0.22);
+  --arena-line: rgba(255, 215, 0, 0.4);
+  --arena-x: #fcd34d;
+  --arena-o: #fef9c3;
+  --arena-tint: rgba(252, 211, 77, 0.15);
+  background: radial-gradient(ellipse at 50% 30%, #b45309, #1a0f00 70%);
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+@media (max-width: 880px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 32px; }
+  .hero-board { display: none; }
+  .nav-links {
+    position: fixed; top: 64px; left: 0; right: 0;
+    background: rgba(10, 10, 31, 0.95);
+    flex-direction: column; padding: 12px;
+    border-bottom: 1px solid var(--panel-border);
+    transform: translateY(-120%); transition: transform 300ms ease;
+    z-index: 40;
+  }
+  .nav-links.open { transform: translateY(0); }
+  .nav-toggle { display: flex; }
+  .top-nav { padding: 10px 14px; margin: 0 0 0; border-radius: 0; }
+}
+@media (max-width: 560px) {
+  .app { padding: 16px 10px 80px; }
+  .players-bar { grid-template-columns: 1fr 1fr; gap: 6px; }
+  .players-bar .vs { display: none; }
+  .player-card { padding: 10px; }
+  .player-symbol { width: 36px; height: 36px; font-size: 18px; }
+  .player-name { font-size: 12px; }
+  .player-score { font-size: 18px; }
+  .page-title { font-size: 22px; }
+  .card { padding: 14px; }
+  .hero { padding: 20px; }
+  .hero h1 { font-size: 26px; }
+  .game-controls .btn { padding: 8px 12px; font-size: 13px; }
+  .nav-wallet .avatar-level { display: none; }
+  .wallet-coin-big { font-size: 40px; }
+  .wallet-coin-big::before { width: 36px; height: 36px; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+body.reduced-motion *, body.reduced-motion *::before, body.reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.01ms !important;
+}
+body.anim-low .backdrop-stars, body.anim-low .backdrop-fx { animation: none !important; }
+body.anim-off .backdrop-stars, body.anim-off .backdrop-fx, body.anim-off .rainbow-world,
+body.anim-off [class*="backdrop"] { animation: none !important; }
+

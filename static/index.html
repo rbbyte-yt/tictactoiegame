@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0a0a1f" />
+  <title>TicTacToe Arena — Ultimate Edition</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='28'%3E%E2%9C%85%3C/text%3E%3C/svg%3E" />
+</head>
+<body data-arena="neon-cyber-city">
+  <!-- Animated arena backdrop layers -->
+  <div id="arena-backdrop" class="arena-backdrop" aria-hidden="true">
+    <div class="backdrop-layer backdrop-stars"></div>
+    <div class="backdrop-layer backdrop-glow"></div>
+    <div class="backdrop-layer backdrop-grid"></div>
+    <div class="backdrop-layer backdrop-fx"></div>
+  </div>
+
+  <!-- ============================= TOP NAV ============================= -->
+  <header class="top-nav glass">
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+    <a class="brand" href="#home">
+      <span class="brand-mark">T</span>
+      <span class="brand-text">TicTacToe <span class="accent">Arena</span></span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#home" data-route="home">Home</a>
+      <a href="#play" data-route="play">Play</a>
+      <a href="#profile" data-route="profile">Profile</a>
+      <a href="#shop" data-route="shop">Shop</a>
+      <a href="#inventory" data-route="inventory">Inventory</a>
+      <a href="#achievements" data-route="achievements">Awards</a>
+      <a href="#history" data-route="history">History</a>
+      <a href="#settings" data-route="settings">Settings</a>
+      <a href="#howto" data-route="howto">How to Play</a>
+    </nav>
+    <div class="nav-wallet">
+      <button class="coin-pill" id="navCoinPill" title="Open wallet">
+        <span class="coin-icon" aria-hidden="true">R</span>
+        <span class="coin-amount" id="navCoinAmount">0</span>
+      </button>
+      <button class="avatar-chip" id="navAvatarChip" title="Open profile">
+        <span class="avatar-mini" id="navAvatar">P</span>
+        <span class="avatar-level" id="navLevel">L1</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================= MAIN ============================= -->
+  <main id="app" class="app">
+
+    <!-- =================== HOME =================== -->
+    <section class="page active" id="page-home" data-page="home">
+      <div class="hero glass">
+        <div class="hero-text">
+          <h1>TicTacToe <span class="accent">Arena</span></h1>
+          <p class="hero-tag">50+ arenas. Custom symbols. 3×3 to 10×10 boards. LAN multiplayer. Endless offline play.</p>
+          <div class="hero-cta">
+            <button class="btn btn-primary btn-lg" data-go="play">Play Now</button>
+            <button class="btn btn-ghost btn-lg" data-go="howto">How to Play</button>
+          </div>
+        </div>
+        <div class="hero-board" aria-hidden="true">
+          <div class="mini-board">
+            <div class="mini-cell x">✕</div><div class="mini-cell"></div><div class="mini-cell o">○</div>
+            <div class="mini-cell o">○</div><div class="mini-cell x">✕</div><div class="mini-cell"></div>
+            <div class="mini-cell"></div><div class="mini-cell o">○</div><div class="mini-cell x">✕</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-cards">
+        <div class="card glass feature" data-go="play">
+          <div class="feature-icon">🎮</div>
+          <h3>Multiple Modes</h3>
+          <p>Solo vs AI, local pass-and-play, and LAN room codes.</p>
+        </div>
+        <div class="card glass feature" data-go="shop">
+          <div class="feature-icon">🌌</div>
+          <h3>50+ Arenas</h3>
+          <p>Unlock Neon Cyber City, Space Galaxy, Dragon Arena and many more.</p>
+        </div>
+        <div class="card glass feature" data-go="shop">
+          <div class="feature-icon">✨</div>
+          <h3>Custom Symbols</h3>
+          <p>Lightning, fire, skull, crown, robot — pick your own X and O.</p>
+        </div>
+        <div class="card glass feature" data-go="profile">
+          <div class="feature-icon">🏆</div>
+          <h3>100+ Levels</h3>
+          <p>Earn XP, climb titles, complete missions and achievements.</p>
+        </div>
+        <div class="card glass feature" data-go="wallet">
+          <div class="feature-icon">🪙</div>
+          <h3>R Coin Wallet</h3>
+          <p>Earn coins, redeem codes, unlock premium content.</p>
+        </div>
+        <div class="card glass feature" data-go="achievements">
+          <div class="feature-icon">🎖️</div>
+          <h3>Achievements</h3>
+          <p>Collect badges for streaks, wins and special challenges.</p>
+        </div>
+      </div>
+
+      <div class="card glass" id="dailyMissionsHome">
+        <h3>📅 Daily Missions</h3>
+        <div class="missions-grid" id="homeMissions"></div>
+      </div>
+    </section>
+
+    <!-- =================== PLAY / MODE SELECT =================== -->
+    <section class="page" id="page-play" data-page="play">
+      <h2 class="page-title">Choose Your Match</h2>
+
+      <div class="mode-cards">
+        <button class="card glass mode-card" data-mode="solo">
+          <div class="mode-emoji">🤖</div>
+          <h3>Local Solo</h3>
+          <p>Play vs AI — Easy / Medium / Hard / Impossible.</p>
+        </button>
+        <button class="card glass mode-card" data-mode="local">
+          <div class="mode-emoji">👥</div>
+          <h3>Local Multiplayer</h3>
+          <p>Two players, one device. Pass-and-play.</p>
+        </button>
+        <button class="card glass mode-card" data-mode="code">
+          <div class="mode-emoji">🔗</div>
+          <h3>Join with Code</h3>
+          <p>Create a 4-digit room. Same-LAN multiplayer via Python server.</p>
+        </button>
+      </div>
+
+      <!-- Match setup panel -->
+      <div class="card glass setup-panel" id="setupPanel">
+        <h3 id="setupTitle">Match Setup</h3>
+        <div class="setup-grid">
+          <label class="field">
+            <span>Board Size</span>
+            <select id="setupBoardSize">
+              <option value="3">3×3 — get 3 in a row</option>
+              <option value="4">4×4 — 3 or 4 in a row</option>
+              <option value="5">5×5 — 4 or 5 in a row</option>
+              <option value="6">6×6 — 4 or 5 in a row</option>
+              <option value="7">7×7 — 4, 5 or 6 in a row</option>
+              <option value="8">8×8 — 5 or more in a row</option>
+              <option value="9">9×9 — 5 or 6 in a row</option>
+              <option value="10">10×10 — 5 or more in a row</option>
+            </select>
+          </label>
+          <label class="field" id="winLenField">
+            <span>Win Length</span>
+            <select id="setupWinLen"></select>
+          </label>
+          <label class="field" id="difficultyField">
+            <span>AI Difficulty</span>
+            <select id="setupDifficulty">
+              <option value="easy">Easy (random)</option>
+              <option value="medium" selected>Medium (basic logic)</option>
+              <option value="hard">Hard (strategic)</option>
+              <option value="expert">Expert (deep search)</option>
+              <option value="impossible">Impossible (minimax, 3×3 unbeatable)</option>
+            </select>
+          </label>
+          <label class="field" id="aiSymbolField">
+            <span>You play as</span>
+            <select id="setupPlayerSymbol">
+              <option value="X">X (goes first)</option>
+              <option value="O">O (goes second)</option>
+            </select>
+          </label>
+          <label class="field" id="p1Field">
+            <span>Player 1 (X)</span>
+            <input id="setupP1Name" type="text" maxlength="16" placeholder="Player 1" />
+          </label>
+          <label class="field" id="p2Field">
+            <span>Player 2 (O)</span>
+            <input id="setupP2Name" type="text" maxlength="16" placeholder="Player 2" />
+          </label>
+          <label class="field" id="roomField" style="display:none">
+            <span>Room Code (4 digits)</span>
+            <div class="room-input">
+              <input id="setupRoomCode" type="text" inputmode="numeric" maxlength="4" placeholder="1234" />
+              <button class="btn btn-ghost" id="joinRoomBtn">Join</button>
+              <button class="btn btn-primary" id="createRoomBtn">Create</button>
+            </div>
+          </label>
+          <label class="field" id="serverField" style="display:none">
+            <span>Server URL</span>
+            <input id="setupServerUrl" type="text" placeholder="ws://localhost:8000" value="ws://localhost:8000" />
+          </label>
+        </div>
+        <div class="setup-actions">
+          <button class="btn btn-primary btn-lg" id="startMatchBtn">Start Match</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== GAME BOARD =================== -->
+    <section class="page" id="page-game" data-page="game">
+      <div class="game-shell">
+        <div class="game-topbar glass">
+          <button class="btn btn-ghost" id="gameBackBtn">← Leave</button>
+          <div class="game-mode-tag" id="gameModeTag">Solo</div>
+          <button class="btn btn-ghost" id="gameSoundBtn" title="Toggle sound">🔊</button>
+        </div>
+
+        <div class="players-bar">
+          <div class="player-card glass" id="playerCardX">
+            <span class="player-symbol x">X</span>
+            <div class="player-meta">
+              <span class="player-name" id="playerNameX">Player 1</span>
+              <span class="player-score" id="playerScoreX">0</span>
+            </div>
+          </div>
+          <div class="vs">VS</div>
+          <div class="player-card glass" id="playerCardO">
+            <span class="player-symbol o">O</span>
+            <div class="player-meta">
+              <span class="player-name" id="playerNameO">Player 2</span>
+              <span class="player-score" id="playerScoreO">0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="turn-banner glass" id="turnBanner">X's turn</div>
+
+        <div class="board-wrap">
+          <div class="board" id="board"></div>
+        </div>
+
+        <div class="game-controls">
+          <button class="btn btn-ghost" id="undoBtn">↶ Undo</button>
+          <button class="btn btn-primary" id="rematchBtn">⟳ Rematch</button>
+          <button class="btn btn-ghost" id="pauseBtn">⏸ Pause</button>
+          <button class="btn btn-ghost" id="rulesBtn">Rules</button>
+        </div>
+
+        <div class="game-result hidden glass" id="gameResult">
+          <h2 id="resultTitle">Result</h2>
+          <p id="resultDetail"></p>
+          <div class="reward-line" id="rewardLine"></div>
+          <button class="btn btn-primary" id="resultRematch">Play Again</button>
+          <button class="btn btn-ghost" id="resultHome">Home</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== PROFILE =================== -->
+    <section class="page" id="page-profile" data-page="profile">
+      <div class="profile-header glass">
+        <div class="banner" id="profileBanner"></div>
+        <div class="profile-head">
+          <div class="avatar-wrap">
+            <div class="avatar" id="profileAvatar">P</div>
+            <div class="avatar-frame" id="profileFrame"></div>
+          </div>
+          <div class="profile-id">
+            <h2 id="profileName">Player</h2>
+            <div class="profile-title" id="profileTitle">Beginner · L1</div>
+            <div class="profile-xp">
+              <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+              <span class="xp-text" id="xpText">0 / 100 XP</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" id="customizeProfileBtn">Customize</button>
+        </div>
+      </div>
+
+      <div class="profile-stats">
+        <div class="card glass stat"><div class="stat-val" id="statMatches">0</div><div class="stat-lbl">Matches</div></div>
+        <div class="card glass stat"><div class="stat-val" id="statWins">0</div><div class="stat-lbl">Wins</div></div>
+        <div class="card glass stat"><div class="stat-val" id="statLosses">0</div><div class="stat-lbl">Losses</div></div>
+        <div class="card glass stat"><div class="stat-val" id="statDraws">0</div><div class="stat-lbl">Draws</div></div>
+        <div class="card glass stat"><div class="stat-val" id="statWinRate">0%</div><div class="stat-lbl">Win Rate</div></div>
+        <div class="card glass stat"><div class="stat-val" id="statStreak">0</div><div class="stat-lbl">Streak</div></div>
+        <div class="card glass stat"><div class="stat-val" id="statBestStreak">0</div><div class="stat-lbl">Best Streak</div></div>
+        <div class="card glass stat"><div class="stat-val" id="statCoins">0</div><div class="stat-lbl">R Coins</div></div>
+      </div>
+
+      <div class="card glass">
+        <h3>Equipped</h3>
+        <div class="equipped-row">
+          <div class="equipped"><span>Favorite Arena:</span> <b id="equippedArena">Neon Cyber City</b></div>
+          <div class="equipped"><span>X Symbol:</span> <b id="equippedX">Classic X</b></div>
+          <div class="equipped"><span>O Symbol:</span> <b id="equippedO">Classic O</b></div>
+          <div class="equipped"><span>Avatar Frame:</span> <b id="equippedFrame">Default</b></div>
+        </div>
+      </div>
+
+      <div class="card glass">
+        <h3>Recent Matches</h3>
+        <div id="profileRecent" class="recent-list"></div>
+      </div>
+    </section>
+
+    <!-- =================== PROFILE CUSTOMIZE =================== -->
+    <section class="page" id="page-customize" data-page="customize">
+      <h2 class="page-title">Profile Customization</h2>
+      <div class="card glass">
+        <div class="customize-grid">
+          <label class="field"><span>Username</span><input id="custName" type="text" maxlength="16" /></label>
+          <label class="field"><span>Avatar Letter</span><input id="custAvatar" type="text" maxlength="2" /></label>
+          <label class="field"><span>Avatar Color</span><input id="custAvatarColor" type="color" /></label>
+          <label class="field"><span>Banner Color 1</span><input id="custBanner1" type="color" /></label>
+          <label class="field"><span>Banner Color 2</span><input id="custBanner2" type="color" /></label>
+        </div>
+        <h4>Avatar Frames</h4>
+        <div class="shop-grid" id="frameGrid"></div>
+      </div>
+      <button class="btn btn-primary" id="saveCustomizeBtn">Save</button>
+      <button class="btn btn-ghost" data-go="profile">Back</button>
+    </section>
+
+    <!-- =================== WALLET =================== -->
+    <section class="page" id="page-wallet" data-page="wallet">
+      <h2 class="page-title">R Coin Wallet</h2>
+      <div class="card glass wallet-hero">
+        <div class="wallet-coin-big" id="walletCoinBig">0</div>
+        <div class="wallet-sub" id="walletSub">R Coins</div>
+        <div class="wallet-actions">
+          <button class="btn btn-primary" id="redeemBtn">🎁 Redeem Code</button>
+          <button class="btn btn-ghost" data-go="shop">Shop</button>
+        </div>
+      </div>
+
+      <div class="card glass">
+        <h3>📊 Transaction History</h3>
+        <div class="tx-list" id="txList"></div>
+      </div>
+
+      <div class="card glass">
+        <h3>🎁 Redeemed Codes</h3>
+        <div class="tx-list" id="redeemedList"></div>
+      </div>
+    </section>
+
+    <!-- =================== SHOP =================== -->
+    <section class="page" id="page-shop" data-page="shop">
+      <h2 class="page-title">Shop</h2>
+      <div class="shop-tabs">
+        <button class="tab active" data-shop-tab="arenas">Arenas</button>
+        <button class="tab" data-shop-tab="symbols">X / O Symbols</button>
+        <button class="tab" data-shop-tab="frames">Avatar Frames</button>
+      </div>
+      <div class="card glass shop-search">
+        <input type="text" id="shopSearch" placeholder="Search items..." />
+        <label class="field inline"><input type="checkbox" id="shopOwnedOnly" /> Owned only</label>
+        <label class="field inline"><input type="checkbox" id="shopLockedOnly" /> Locked only</label>
+      </div>
+      <div class="shop-grid" id="shopGrid"></div>
+    </section>
+
+    <!-- =================== INVENTORY =================== -->
+    <section class="page" id="page-inventory" data-page="inventory">
+      <h2 class="page-title">Inventory</h2>
+      <div class="shop-tabs">
+        <button class="tab active" data-inv-tab="arenas">Arenas</button>
+        <button class="tab" data-inv-tab="symbols">Symbols</button>
+        <button class="tab" data-inv-tab="frames">Frames</button>
+      </div>
+      <div class="shop-grid" id="invGrid"></div>
+    </section>
+
+    <!-- =================== ACHIEVEMENTS =================== -->
+    <section class="page" id="page-achievements" data-page="achievements">
+      <h2 class="page-title">Achievements</h2>
+      <div class="progress-summary glass">
+        <span id="achSummary">0 / 0 unlocked</span>
+        <div class="xp-bar"><div class="xp-fill" id="achFill"></div></div>
+      </div>
+      <div class="shop-grid" id="achGrid"></div>
+    </section>
+
+    <!-- =================== HISTORY =================== -->
+    <section class="page" id="page-history" data-page="history">
+      <h2 class="page-title">Match History</h2>
+      <div class="card glass">
+        <div id="historyList" class="history-list"></div>
+        <button class="btn btn-ghost" id="clearHistoryBtn">Clear History</button>
+      </div>
+    </section>
+
+    <!-- =================== SETTINGS =================== -->
+    <section class="page" id="page-settings" data-page="settings">
+      <h2 class="page-title">Settings</h2>
+      <div class="card glass">
+        <h3>Audio & Feedback</h3>
+        <label class="setting-row"><span>Sound effects</span><input type="checkbox" id="setSound" /></label>
+        <label class="setting-row"><span>Haptic feedback</span><input type="checkbox" id="setHaptic" /></label>
+        <label class="setting-row"><span>Animations</span><input type="range" id="setAnimLevel" min="0" max="2" /></label>
+        <label class="setting-row"><span>Reduced motion</span><input type="checkbox" id="setReducedMotion" /></label>
+      </div>
+      <div class="card glass">
+        <h3>Data</h3>
+        <p class="muted">All data is stored in your browser's localStorage. Clearing your browser data will reset your progress.</p>
+        <button class="btn btn-ghost" id="exportDataBtn">Export Save (JSON)</button>
+        <button class="btn btn-ghost" id="importDataBtn">Import Save</button>
+        <input type="file" id="importFile" accept="application/json" hidden />
+        <button class="btn btn-danger" id="resetDataBtn">Reset All Data</button>
+      </div>
+    </section>
+
+    <!-- =================== HOW TO PLAY =================== -->
+    <section class="page" id="page-howto" data-page="howto">
+      <h2 class="page-title">How to Play</h2>
+      <div class="card glass prose">
+        <h3>Goal</h3>
+        <p>Get your symbols in a row — horizontal, vertical, or diagonal — and reach the win length for the chosen board size before your opponent.</p>
+        <h3>Board Sizes & Win Length</h3>
+        <ul>
+          <li><b>3×3</b> — get 3 in a row (classic).</li>
+          <li><b>4×4</b> — choose 3 or 4 in a row.</li>
+          <li><b>5×5</b> — choose 4 or 5 in a row.</li>
+          <li><b>6×6</b> — 4 or 5 in a row.</li>
+          <li><b>7×7</b> — 4, 5 or 6 in a row.</li>
+          <li><b>8×8</b> — 5 or more in a row.</li>
+          <li><b>9×9</b> — 5 or 6 in a row.</li>
+          <li><b>10×10</b> — 5 or more in a row.</li>
+        </ul>
+        <h3>Game Modes</h3>
+        <ul>
+          <li><b>Local Solo</b> — vs AI with 5 difficulty levels.</li>
+          <li><b>Local Multiplayer</b> — pass-and-play on one device.</li>
+          <li><b>Join with Code</b> — same-LAN multiplayer. Run the Python server, share the 4-digit code, both devices connect.</li>
+        </ul>
+        <h3>AI Difficulty</h3>
+        <ul>
+          <li><b>Easy</b> — random moves.</li>
+          <li><b>Medium</b> — basic win/block logic.</li>
+          <li><b>Hard</b> — strategic with lookahead.</li>
+          <li><b>Expert</b> — deeper search with heuristics.</li>
+          <li><b>Impossible</b> — full minimax with alpha-beta. Unbeatable on 3×3. On larger boards it uses bounded depth search and is strong but not literally unbeatable.</li>
+        </ul>
+        <h3>R Coins</h3>
+        <p>Earn coins by winning matches and completing missions. Smaller rewards for draws. Use coins to unlock arenas, symbols and avatar frames. Redeem codes for bonus coins.</p>
+        <h3>Redeem Codes</h3>
+        <ul>
+          <li><code>RABBi</code> — Unlimited R Coins mode (local profile only).</li>
+          <li><code>WELCOME100</code> — 100 R Coins (once).</li>
+          <li><code>ARENA500</code> — 500 R Coins (once).</li>
+          <li><code>STARTER250</code> — 250 R Coins (once).</li>
+        </ul>
+        <p class="muted">Codes are case-insensitive. <b>RABBi</b> must be spelled exactly. Codes are not secure against someone editing their browser data — that's fine for an offline single-player game.</p>
+        <h3>LAN Multiplayer Setup</h3>
+        <ol>
+          <li>Run <code>python app.py</code> on the host computer.</li>
+          <li>Find the host's local IP (e.g. <code>192.168.1.10</code>).</li>
+          <li>On the other device, set the server URL to <code>ws://192.168.1.10:8000</code> and join with the 4-digit code.</li>
+          <li>Both devices must be on the same Wi-Fi/LAN. This is NOT cross-internet multiplayer.</li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================= MODALS ============================= -->
+  <div class="modal-backdrop hidden" id="modalBackdrop">
+    <div class="modal glass" id="modal">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <!-- Coin sparkle layer -->
+  <div class="coin-fx-layer" id="coinFxLayer" aria-hidden="true"></div>
+
+  <!-- ============================= SCRIPTS ============================= -->
+  <script src="data.js"></script>
+  <script src="store.js"></script>
+  <script src="game.js"></script>
+  <script src="net.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
